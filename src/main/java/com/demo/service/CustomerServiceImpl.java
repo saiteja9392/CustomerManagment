@@ -34,6 +34,16 @@ public class CustomerServiceImpl {
 		
 	}
 	
+	public List<CustomerLogin> listAllCustomerLogins(){
+		
+		List<CustomerLogin> list = new ArrayList<CustomerLogin>();
+		
+		list = loginrepo.findAll();
+		
+		return list;
+		
+	}
+	
 	public Customer getCustomer(String username) throws Exception {
 		
 		Customer customer = repo.findById(username);
@@ -143,7 +153,6 @@ public class CustomerServiceImpl {
 			
 			CustomerLogin user = loginrepo.findByLoginid(customerLogin.getLoginid());
 			
-			
 			if(user == null) {
 				
 				CustomerLogin cLogin = new CustomerLogin();
@@ -151,6 +160,9 @@ public class CustomerServiceImpl {
 				cLogin.setLoginid(customerLogin.getLoginid());
 				cLogin.setPassword(AES.encrypt(customerLogin.getPassword()));
 				cLogin.setIsAdmin(customerLogin.getIsAdmin());
+				
+				if(customerLogin.getIsAdmin() == "")
+					cLogin.setIsAdmin("NULL");
 				
 				loginrepo.save(cLogin);
 				
@@ -173,7 +185,7 @@ public class CustomerServiceImpl {
 		if (user != null) {
 			if (user.getLoginid().contentEquals(username)) {
 				
-				loginrepo.updatePassword(username, password);
+				loginrepo.updatePassword(username, AES.encrypt(password));
 				Status = "Password updated Successfully";
 				
 			}

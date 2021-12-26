@@ -26,18 +26,22 @@ public class CustomerController {
 		return customerServiceImpl.listAllCustomers();
 	}
 	
+	@GetMapping("/AllCustomerLogins")
+	public List<CustomerLogin> listAllCustomerLogins(){
+		
+		return customerServiceImpl.listAllCustomerLogins();
+	}
+	
 	@GetMapping("/GetCustomer/{id}")
 	public Customer getCustomer(@PathVariable("id") String username) throws Exception {
 		
 		return customerServiceImpl.getCustomer(username);
-
 	}
 	
 	@PostMapping("/AddCustomer")
 	public String addCustomer(@RequestBody Customer customer) {
 		
 		return customerServiceImpl.addCustomer(customer);
-	
 	}	
 	
 	@PostMapping("/UpdateCustomer/{id}")
@@ -52,7 +56,6 @@ public class CustomerController {
 		return customerServiceImpl.login(id,pass);
 	}
 
-	
 	@PostMapping("/AddCustomerLogin")
 	public String createCustomerLogin(@RequestBody CustomerLogin customerLogin){
 		
