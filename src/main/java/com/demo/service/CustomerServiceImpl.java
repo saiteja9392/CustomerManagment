@@ -10,6 +10,7 @@ import com.demo.doa.CustomerLoginRepo;
 import com.demo.doa.CustomerRepo;
 import com.demo.model.Customer;
 import com.demo.model.CustomerLogin;
+import com.demo.util.AES;
 import com.demo.util.Utils;
 
 @Service
@@ -50,10 +51,10 @@ public class CustomerServiceImpl {
 		
 		if(findCustomer == null) {
 			repo.save(customer);
-			Status = "User Added Successfully";
+			Status = "Customer Added Successfully";
 		}
 		else {
-			Status = "User id already in Use";
+			Status = "Customer id already in Use";
 		}
 		
 		return Status;
@@ -93,21 +94,21 @@ public class CustomerServiceImpl {
 		return Status;
 	}
 
-	public String login(String id, String pass) {
+	public String login(String username, String password){
 		
 		String timeStamp = Utils.getCurrentTimeStamp();
-
-		CustomerLogin user = loginrepo.findByLoginid(id);
+		
+		CustomerLogin user = loginrepo.findByLoginid(username);
 
 		if (user != null) {
-			if (user.getLoginid().contentEquals(id)) {
+			if (user.getLoginid().contentEquals(username)) {
 
-				if (user.getPassword().contentEquals(pass)) {
+				if (password.contentEquals(AES.decrypt(user.getPassword()))) {
 
 					Status = "Login Success";
 					
 					user.setLastlogin(timeStamp);
-					user.setLoginid(id);
+					user.setLoginid(username);
 					
 					loginrepo.updateLastLogin(user.getLastlogin(),user.getLoginid());
 					
@@ -129,7 +130,7 @@ public class CustomerServiceImpl {
 		return Status;
 	}
 
-	public String createCustomerLogin(String username, String password) {
+	public String createCustomerLogin(String username, String password){
 		
 		Customer c = repo.findById(username);
 		
@@ -145,13 +146,13 @@ public class CustomerServiceImpl {
 			
 			if(user == null) {
 				
-				loginrepo.addCustomerLogin(username, password);
-				Status = "User Added Successfully";
+				loginrepo.addCustomerLogin(username, AES.encrypt(password));
+				Status = "CustomerLogin Added Successfully";
 			}
 			
 			else if (user.getLoginid().contentEquals(username)) {
 	
-				Status = "User Already exsists with this username";
+				Status = "CustomerLogin Already exsists with this username";
 			}
 		}
 		
@@ -170,11 +171,33 @@ public class CustomerServiceImpl {
 				
 			}
 			else {
-				Status = "User Login Not Found";
+				Status = "CustomerLogin Login Not Found";
 			}
 		}
 		else {
-			Status = "User Login Not Found";
+			Status = "CustomerLogin Login Not Found";
+		}
+		
+		return Status;
+	}
+	
+	public String deleteCustomer(String username) {
+		
+		Customer c = repo.findById(username);
+		CustomerLogin user = loginrepo.findByLoginid(username);
+		
+		if(c == null) {
+			Status = "Customer Details not Found";
+		}
+		
+		if(c != null) {
+			repo.delete(c);
+			
+			if(user != null) {
+				loginrepo.delete(user);
+			}
+			
+			Status = "Customer details deleted Successfully";
 		}
 		
 		return Status;

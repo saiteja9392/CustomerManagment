@@ -1,6 +1,13 @@
 package com.demo.controller;
 
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,14 +53,14 @@ public class CustomerController {
 	}
 	
 	@PostMapping("/Login/{loginid}/{password}")
-	public String login(@PathVariable("loginid") String id, @PathVariable("password") String pass) {
+	public String login(@PathVariable("loginid") String id, @PathVariable("password") String pass) throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException {
 		
 		return customerServiceImpl.login(id,pass);
 	}
 
 	
-	@PostMapping("/CreateLogin/{loginid}/{password}")
-	public String createCustomerLogin(@PathVariable("loginid") String username, @PathVariable("password") String password) {
+	@PostMapping("/AddCustomerLogin/{loginid}/{password}")
+	public String createCustomerLogin(@PathVariable("loginid") String username, @PathVariable("password") String password) throws NoSuchAlgorithmException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, NoSuchPaddingException {
 		
 		return customerServiceImpl.createCustomerLogin(username,password);
 	}
@@ -62,5 +69,11 @@ public class CustomerController {
 	public String updatePassword(@PathVariable("loginid") String username, @PathVariable("password") String password) {
 	
 		return customerServiceImpl.updatePassword(username,password);
+	}
+	
+	@PostMapping("/DeleteCustomer/{loginid}")
+	public String deleteCustomer(@PathVariable("loginid") String username) {
+		
+		return customerServiceImpl.deleteCustomer(username);
 	}
 }
