@@ -246,5 +246,35 @@ public class CustomerServiceImpl {
 		
 		return Status;
 	}
+
+	public String decryptedPassword(String isAdmin, String username) {
+		
+		Customer customer = repo.findById(username);
+		CustomerLogin customerLogin = loginrepo.findByLoginid(username);
+		
+		if(customer == null) {
+			Status = "Customer Details not Found";
+		}
+		
+		else {
+			
+			if(customerLogin == null) {
+				Status = "CustomerLogin Details not Found";
+			}
+			
+			else {
+				CustomerLogin isAdminUser = loginrepo.findByLoginid(isAdmin);
+
+				if (isAdminUser != null && isAdminUser.getIsAdmin().contentEquals("A")) {
+
+					String decryptedPassword = AES.decrypt(customerLogin.getPassword());
+
+					Status = "DecryptedPassword for " + customerLogin.getLoginid() + " is " + decryptedPassword;
+				}
+			}
+		}
+		
+		return Status;
+	}
 	
 }

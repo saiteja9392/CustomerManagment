@@ -79,4 +79,10 @@ public class CustomerController {
 		
 		return customerServiceImpl.deleteCustomer(admin,deleteCustomer);
 	}
+	
+	@GetMapping("/Decrypt/{isAdmin}/{loginid}")
+	public String decryptedPassword(@PathVariable("isAdmin") String isAdmin, @PathVariable("loginid") String username) {
+		
+		return customerServiceImpl.decryptedPassword(isAdmin,username);
+	}
 }
