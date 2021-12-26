@@ -16,6 +16,14 @@ public class CustomerLogin {
 	private String password;
 	private String lastlogin;
 	
+	private String isAdmin;
+	
+	public String getIsAdmin() {
+		return isAdmin;
+	}
+	public void setIsAdmin(String isAdmin) {
+		this.isAdmin = isAdmin;
+	}
 	public String getLoginid() {
 		return loginid;
 	}

@@ -130,9 +130,9 @@ public class CustomerServiceImpl {
 		return Status;
 	}
 
-	public String createCustomerLogin(String username, String password){
+	public String createCustomerLogin(CustomerLogin customerLogin){
 		
-		Customer c = repo.findById(username);
+		Customer c = repo.findById(customerLogin.getLoginid());
 		
 		if(c == null) {
 			
@@ -141,16 +141,23 @@ public class CustomerServiceImpl {
 		
 		else{
 			
-			CustomerLogin user = loginrepo.findByLoginid(username);
+			CustomerLogin user = loginrepo.findByLoginid(customerLogin.getLoginid());
 			
 			
 			if(user == null) {
 				
-				loginrepo.addCustomerLogin(username, AES.encrypt(password));
+				CustomerLogin cLogin = new CustomerLogin();
+				
+				cLogin.setLoginid(customerLogin.getLoginid());
+				cLogin.setPassword(AES.encrypt(customerLogin.getPassword()));
+				cLogin.setIsAdmin(customerLogin.getIsAdmin());
+				
+				loginrepo.save(cLogin);
+				
 				Status = "CustomerLogin Added Successfully";
 			}
 			
-			else if (user.getLoginid().contentEquals(username)) {
+			else if (customerLogin.getLoginid().contentEquals(user.getLoginid())) {
 	
 				Status = "CustomerLogin Already exsists with this username";
 			}
@@ -181,23 +188,37 @@ public class CustomerServiceImpl {
 		return Status;
 	}
 	
-	public String deleteCustomer(String username) {
+	public String deleteCustomer(String admin,String deleteCustomer) {
 		
-		Customer c = repo.findById(username);
-		CustomerLogin user = loginrepo.findByLoginid(username);
+		Customer customer = repo.findById(deleteCustomer);
+		CustomerLogin customerLogin = loginrepo.findByLoginid(deleteCustomer);
 		
-		if(c == null) {
+		if(customer == null) {
 			Status = "Customer Details not Found";
 		}
 		
-		if(c != null) {
-			repo.delete(c);
+		else{
 			
-			if(user != null) {
-				loginrepo.delete(user);
+			CustomerLogin isAdminUser = loginrepo.findByLoginid(admin);
+			
+			if(isAdminUser != null && isAdminUser.getIsAdmin().contentEquals("A")) {
+			
+				repo.delete(customer);
+
+				if (customerLogin != null) {
+					loginrepo.delete(customerLogin);
+				}
+
+				Status = "Customer details deleted Successfully";
 			}
 			
-			Status = "Customer details deleted Successfully";
+			else if(isAdminUser == null) {
+				Status = "ADMIN CustomerLogin Details Not Found";
+			}
+			
+			else {
+				Status = "Customer is not an ADMIN User";
+			}
 		}
 		
 		return Status;

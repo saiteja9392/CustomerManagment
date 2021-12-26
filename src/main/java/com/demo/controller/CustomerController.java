@@ -1,13 +1,6 @@
 package com.demo.controller;
 
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.demo.model.Customer;
+import com.demo.model.CustomerLogin;
 import com.demo.service.CustomerServiceImpl;
 
 @RestController
@@ -53,16 +47,16 @@ public class CustomerController {
 	}
 	
 	@PostMapping("/Login/{loginid}/{password}")
-	public String login(@PathVariable("loginid") String id, @PathVariable("password") String pass) throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException {
+	public String login(@PathVariable("loginid") String id, @PathVariable("password") String pass){
 		
 		return customerServiceImpl.login(id,pass);
 	}
 
 	
-	@PostMapping("/AddCustomerLogin/{loginid}/{password}")
-	public String createCustomerLogin(@PathVariable("loginid") String username, @PathVariable("password") String password) throws NoSuchAlgorithmException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, NoSuchPaddingException {
+	@PostMapping("/AddCustomerLogin")
+	public String createCustomerLogin(@RequestBody CustomerLogin customerLogin){
 		
-		return customerServiceImpl.createCustomerLogin(username,password);
+		return customerServiceImpl.createCustomerLogin(customerLogin);
 	}
 	
 	@PostMapping("/UpdatePassword/{loginid}/{password}")
@@ -71,9 +65,9 @@ public class CustomerController {
 		return customerServiceImpl.updatePassword(username,password);
 	}
 	
-	@PostMapping("/DeleteCustomer/{loginid}")
-	public String deleteCustomer(@PathVariable("loginid") String username) {
+	@PostMapping("/DeleteCustomer/{isAdmin}/{loginid}")
+	public String deleteCustomer(@PathVariable("isAdmin") String admin, @PathVariable("loginid") String deleteCustomer) {
 		
-		return customerServiceImpl.deleteCustomer(username);
+		return customerServiceImpl.deleteCustomer(admin,deleteCustomer);
 	}
 }

@@ -10,9 +10,7 @@ public class Customer {
 
 	@Id
 	private String id;
-
 	private String firstname;
-	
 	private String lastname;
 
 	public String getId() {
