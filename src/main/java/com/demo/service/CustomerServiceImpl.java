@@ -55,6 +55,17 @@ public class CustomerServiceImpl {
 		return customer;
 	}
 	
+	public CustomerLogin getCustomerLogin(String username) throws Exception {
+		
+		CustomerLogin customerLogin = loginrepo.findByLoginid(username);
+		
+		if(customerLogin == null){
+			throw new Exception("No Customer found with the username");
+		}
+		
+		return customerLogin;
+	}
+	
 	public String addCustomer(Customer customer) {
 		
 		Customer findCustomer = repo.findById(customer.getId());
