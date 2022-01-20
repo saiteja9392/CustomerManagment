@@ -12,4 +12,12 @@ public class Utils {
 		
 		return dtf.format(now);
 	}
+	
+	public static String getOrderDate() {
+		
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+		LocalDateTime now = LocalDateTime.now();
+		
+		return dtf.format(now);
+	}
 }

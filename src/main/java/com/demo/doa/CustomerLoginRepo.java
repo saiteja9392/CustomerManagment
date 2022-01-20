@@ -14,11 +14,6 @@ public interface CustomerLoginRepo extends JpaRepository<CustomerLogin, String>{
 	
 	@Transactional
 	@Modifying
-	@Query(value = "insert into customerlogin(loginid,password) values (?1,?2)", nativeQuery = true)
-	void addCustomerLogin(String uname, String pass);
-	
-	@Transactional
-	@Modifying
 	@Query(value = "update customerlogin set lastlogin = ?1 where loginid = ?2", nativeQuery = true)
 	void updateLastLogin(String lastLogin, String uname);
 	
