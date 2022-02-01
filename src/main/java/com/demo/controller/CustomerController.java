@@ -38,6 +38,12 @@ public class CustomerController {
 		return customerServiceImpl.getCustomer(username);
 	}
 	
+	@PostMapping("/GetCustomer")
+	public Customer getAuthCustomer(@RequestBody String username) throws Exception {
+		
+		return customerServiceImpl.getCustomer(username);
+	}
+	
 	@GetMapping("/GetCustomerLogin/{id}")
 	public CustomerLogin getCustomerLogin(@PathVariable("id") String username) throws Exception {
 		
