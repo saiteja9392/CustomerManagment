@@ -7,6 +7,7 @@ import com.demo.doa.CustomerLoginRepo;
 import com.demo.doa.CustomerRepo;
 import com.demo.doa.OrdersRepo;
 import com.demo.doa.PurchaseRepo;
+import com.demo.exception.custom.CustomerException;
 import com.demo.model.Customer;
 import com.demo.model.CustomerLogin;
 import com.demo.model.OrderDetails;
@@ -38,7 +39,7 @@ public class PurchaseServiceImpl {
 		OrderDetails order = new OrderDetails();
 		
 		if(c == null || cLogin == null) {
-			Status = "No Login Found";
+			throw new CustomerException("No Login Found");
 		}
 		
 		else {
