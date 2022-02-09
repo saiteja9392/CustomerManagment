@@ -1,8 +1,17 @@
 package com.demo.controller;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +28,8 @@ public class CustomerController {
 	@Autowired(required = true)
 	CustomerServiceImpl customerServiceImpl;
 	
+	@Autowired
+	MessageSource messageSource;
 	
 	@GetMapping("/AllCustomers")
 	public List<Customer> listAllCustomers(){
@@ -33,9 +44,15 @@ public class CustomerController {
 	}
 	
 	@GetMapping("/GetCustomer/{id}")
-	public Customer getCustomer(@PathVariable("id") String username) throws Exception {
+	public EntityModel<Customer> getCustomer(@PathVariable("id") String username) throws Exception {
 		
-		return customerServiceImpl.getCustomer(username);
+		Customer customer = customerServiceImpl.getCustomer(username);
+		
+		EntityModel<Customer> model = EntityModel.of(customer);
+		WebMvcLinkBuilder linkTo = linkTo(methodOn(this.getClass()).listAllCustomers());
+		model.add(linkTo.withRel("all-customers"));
+		
+		return model;
 	}
 	
 	@PostMapping("/GetCustomer")
@@ -51,7 +68,7 @@ public class CustomerController {
 	}
 	
 	@PostMapping("/AddCustomer")
-	public String addCustomer(@RequestBody Customer customer) {
+	public String addCustomer(@Valid @RequestBody Customer customer) {
 		
 		return customerServiceImpl.addCustomer(customer);
 	}	
@@ -90,5 +107,11 @@ public class CustomerController {
 	public String decryptedPassword(@PathVariable("isAdmin") String isAdmin, @PathVariable("loginid") String username) {
 		
 		return customerServiceImpl.decryptedPassword(isAdmin,username);
+	}
+	
+	@GetMapping("/Int")
+	public String Internationalized() {
+		
+		return messageSource.getMessage("sample.message", null, LocaleContextHolder.getLocale());
 	}
 }
