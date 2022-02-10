@@ -7,8 +7,12 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
+
+
 @Entity
 @Table(name = "purchase")
+@JsonFilter("PurchaseFilter")
 public class Purchase {
 
 	@Id

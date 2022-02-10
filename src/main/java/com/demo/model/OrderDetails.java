@@ -6,6 +6,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "orders")
 public class OrderDetails {
@@ -14,9 +16,13 @@ public class OrderDetails {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer sno;
 	
+	@JsonIgnore
 	private String username;
+	
 	private String product;
+	
 	private String dateofpurchase;
+	
 	private int price;
 	
 	public String getUsername() {
