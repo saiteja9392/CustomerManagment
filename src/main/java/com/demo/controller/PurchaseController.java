@@ -2,6 +2,8 @@ package com.demo.controller;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +24,8 @@ public class PurchaseController {
 	@Autowired
 	PurchaseServiceImpl purchaseServiceImpl;
 	
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
+	
 	@PostMapping("/BuyItem/{id}")
 	public String addPurchase(@RequestBody Purchase purchase, @PathVariable("id") String username) throws Exception {
 		
@@ -32,6 +36,10 @@ public class PurchaseController {
 	public MappingJacksonValue getAllTransactionIDs() {
 		
 		List<Purchase> purchases = purchaseServiceImpl.getAllTransactionIDs();
+		
+		for(int i =0;i<purchases.size();i++) {
+			log.info(purchases.get(i).getTransactionId());
+		}
 		
 		SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.filterOutAllExcept("transactionid");
 		

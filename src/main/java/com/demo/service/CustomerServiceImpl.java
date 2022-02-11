@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 
 import com.demo.doa.CustomerLoginRepo;
 import com.demo.doa.CustomerRepo;
-import com.demo.exception.custom.CustomerException;
-import com.demo.exception.custom.CustomerLoginException;
+import com.demo.exception.custom.InValidRequestException;
+import com.demo.exception.custom.ResourceException;
 import com.demo.model.Customer;
 import com.demo.model.CustomerLogin;
 import com.demo.util.AES;
@@ -51,7 +51,7 @@ public class CustomerServiceImpl {
 		Customer customer = repo.findById(username);
 		
 		if(customer == null){
-			throw new CustomerException("No Customer found with the username");
+			throw new ResourceException("No Customer found with the username");
 		}
 		
 		return customer;
@@ -62,7 +62,7 @@ public class CustomerServiceImpl {
 		CustomerLogin customerLogin = loginrepo.findByLoginid(username);
 		
 		if(customerLogin == null){
-			throw new CustomerLoginException("No Customer Login found with the username");
+			throw new ResourceException("No Customer Login found with the username");
 		}
 		
 		return customerLogin;
@@ -77,7 +77,7 @@ public class CustomerServiceImpl {
 			Status = "Customer Added Successfully";
 		}
 		else {
-			throw new CustomerException("Customer id already in Use");
+			throw new ResourceException("Customer id already in Use");
 		}
 		
 		return Status;
@@ -88,13 +88,13 @@ public class CustomerServiceImpl {
 		Customer c = repo.findById(username);
 		
 		if(c == null){
-			throw new CustomerException("No Customer Record Found");
+			throw new ResourceException("No Customer Record Found");
 		}
 
 		else{
 			
 			if (!c.getId().contentEquals(customer.getId())) {
-				throw new CustomerException("Both Id's are different, please check");
+				throw new ResourceException("Both Id's are different, please check");
 			} 
 			
 			else {
@@ -136,18 +136,18 @@ public class CustomerServiceImpl {
 					loginrepo.updateLastLogin(user.getLastlogin(),user.getLoginid());
 					
 				} else {
-					Status = "Login failed";
+					throw new InValidRequestException("Login Failed");
 				}
 			}
 
 			else {
-				throw new CustomerLoginException("User Login Not Found");
+				throw new InValidRequestException("User Login Not Found");
 			}
 
 		}
 
 		else if (user == null) {
-			throw new CustomerLoginException("User Login Not Found");
+			throw new InValidRequestException("User Login Not Found");
 		}
 		
 		return Status;
@@ -159,7 +159,7 @@ public class CustomerServiceImpl {
 		
 		if(c == null) {
 			
-			throw new CustomerException("Customer Details not Found");
+			throw new ResourceException("Customer Details not Found");
 		}
 		
 		else{
@@ -184,7 +184,7 @@ public class CustomerServiceImpl {
 			
 			else if (customerLogin.getLoginid().contentEquals(user.getLoginid())) {
 	
-				throw new CustomerLoginException("CustomerLogin Already exsists with this username");
+				throw new InValidRequestException("CustomerLogin Already exsists with this username");
 			}
 		}
 		
@@ -198,16 +198,23 @@ public class CustomerServiceImpl {
 		if (user != null) {
 			if (user.getLoginid().contentEquals(username)) {
 				
-				loginrepo.updatePassword(username, AES.encrypt(password));
-				Status = "Password updated Successfully";
+				if(AES.decrypt(user.getPassword()).contentEquals(password)) {
+					
+					throw new InValidRequestException("Old and New Password are same");
+				}
+				else {
+				
+					loginrepo.updatePassword(username, AES.encrypt(password));
+					Status = "Password updated Successfully";
+				}
 				
 			}
 			else {
-				throw new CustomerLoginException("CustomerLogin Login Not Found");
+				throw new ResourceException("CustomerLogin Login Not Found");
 			}
 		}
 		else {
-			throw new CustomerLoginException("CustomerLogin Login Not Found");
+			throw new ResourceException("CustomerLogin Login Not Found");
 		}
 		
 		return Status;
@@ -219,7 +226,7 @@ public class CustomerServiceImpl {
 		CustomerLogin customerLogin = loginrepo.findByLoginid(deleteCustomer);
 		
 		if(customer == null) {
-			throw new CustomerException("Customer Details not Found");
+			throw new ResourceException("Customer Details not Found");
 		}
 		
 		else{
@@ -238,11 +245,11 @@ public class CustomerServiceImpl {
 			}
 			
 			else if(isAdminUser == null) {
-				throw new CustomerException("ADMIN CustomerLogin Details Not Found");
+				throw new InValidRequestException("ADMIN CustomerLogin Details Not Found");
 			}
 			
 			else {
-				throw new CustomerException("Customer is not an ADMIN User");
+				throw new InValidRequestException("Customer is not an ADMIN User");
 			}
 		}
 		
@@ -255,13 +262,13 @@ public class CustomerServiceImpl {
 		CustomerLogin customerLogin = loginrepo.findByLoginid(username);
 		
 		if(customer == null) {
-			throw new CustomerException("Customer Details not Found");
+			throw new ResourceException("Customer Details not Found");
 		}
 		
 		else {
 			
 			if(customerLogin == null) {
-				throw new CustomerLoginException("CustomerLogin Details not Found");
+				throw new ResourceException("CustomerLogin Details not Found");
 			}
 			
 			else {

@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import com.demo.exception.custom.CustomerException;
-import com.demo.exception.custom.CustomerLoginException;
+import com.demo.exception.custom.InValidRequestException;
+import com.demo.exception.custom.ResourceException;
 import com.demo.util.Utils;
 
 @ControllerAdvice
@@ -26,20 +26,20 @@ public class ExceptionHandling extends ResponseEntityExceptionHandler{
 		return new ResponseEntity<Object>(exceptionMessage, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
-	@ExceptionHandler(CustomerException.class)
-	public final ResponseEntity<Object> handleCustomerExceptions(CustomerException e, WebRequest web){
+	@ExceptionHandler(ResourceException.class)
+	public final ResponseEntity<Object> handleCustomerExceptions(ResourceException e, WebRequest web){
 		
 		ExceptionMessageFormat exceptionMessage = new ExceptionMessageFormat(e.getMessage(), Utils.getCurrentTimeStamp(),web.getDescription(false));
 		
 		return new ResponseEntity<Object>(exceptionMessage, HttpStatus.NOT_FOUND);
 	}
 	
-	@ExceptionHandler(CustomerLoginException.class)
-	public final ResponseEntity<Object> handleCustomerLoginExceptions(CustomerLoginException e, WebRequest web){
+	@ExceptionHandler(InValidRequestException.class)
+	public final ResponseEntity<Object> handleCustomerLoginExceptions(InValidRequestException e, WebRequest web){
 		
 		ExceptionMessageFormat exceptionMessage = new ExceptionMessageFormat(e.getMessage(), Utils.getCurrentTimeStamp(),web.getDescription(false));
 		
-		return new ResponseEntity<Object>(exceptionMessage, HttpStatus.NOT_FOUND);
+		return new ResponseEntity<Object>(exceptionMessage, HttpStatus.BAD_REQUEST);
 	}
 	
 	@Override

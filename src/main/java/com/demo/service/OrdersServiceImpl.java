@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.demo.doa.OrdersRepo;
+import com.demo.exception.custom.ResourceException;
 import com.demo.model.OrderDetails;
 
 @Service
@@ -17,6 +18,9 @@ public class OrdersServiceImpl {
 	public List<OrderDetails> getOrders(String username) {
 		
 		List<OrderDetails> orders = oRepo.getOrders(username);
+		
+		if(orders == null)
+			throw new ResourceException("No Orders Found");
 		
 		return orders;
 	}

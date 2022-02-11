@@ -12,9 +12,11 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -73,7 +75,7 @@ public class CustomerController {
 		return customerServiceImpl.addCustomer(customer);
 	}	
 	
-	@PostMapping("/UpdateCustomer/{id}")
+	@PutMapping("/UpdateCustomer/{id}")
 	public String updateCustomerDetails(@PathVariable("id") String username, @RequestBody Customer customer) {
 
 		return customerServiceImpl.updateCustomerDetails(username,customer);
@@ -91,13 +93,13 @@ public class CustomerController {
 		return customerServiceImpl.createCustomerLogin(customerLogin);
 	}
 	
-	@PostMapping("/UpdatePassword/{loginid}/{password}")
+	@PutMapping("/UpdatePassword/{loginid}/{password}")
 	public String updatePassword(@PathVariable("loginid") String username, @PathVariable("password") String password) {
 	
 		return customerServiceImpl.updatePassword(username,password);
 	}
 	
-	@PostMapping("/DeleteCustomer/{isAdmin}/{loginid}")
+	@DeleteMapping("/DeleteCustomer/{isAdmin}/{loginid}")
 	public String deleteCustomer(@PathVariable("isAdmin") String admin, @PathVariable("loginid") String deleteCustomer) {
 		
 		return customerServiceImpl.deleteCustomer(admin,deleteCustomer);
