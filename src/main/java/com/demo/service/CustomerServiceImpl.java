@@ -3,7 +3,10 @@ package com.demo.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import com.demo.doa.CustomerLoginRepo;
@@ -16,14 +19,16 @@ import com.demo.util.AES;
 import com.demo.util.Utils;
 
 @Service
+@Transactional
+@Repository
 public class CustomerServiceImpl {
-
+	
 	private String Status = "";
 	
-	@Autowired(required = true)
+	@Autowired
 	CustomerRepo repo;
 	
-	@Autowired(required = true)
+	@Autowired
 	CustomerLoginRepo loginrepo;
 	
 	public List<Customer> listAllCustomers(){

@@ -27,7 +27,7 @@ import com.demo.service.CustomerServiceImpl;
 @RestController
 public class CustomerController {
 	
-	@Autowired(required = true)
+	@Autowired
 	CustomerServiceImpl customerServiceImpl;
 	
 	@Autowired
@@ -58,9 +58,9 @@ public class CustomerController {
 	}
 	
 	@PostMapping("/GetCustomer")
-	public Customer getAuthCustomer(@RequestBody String username) throws Exception {
+	public Customer getAuthCustomer(@RequestBody Customer customer) throws Exception {
 		
-		return customerServiceImpl.getCustomer(username);
+		return customerServiceImpl.getCustomer(customer.getId());
 	}
 	
 	@GetMapping("/GetCustomerLogin/{id}")
