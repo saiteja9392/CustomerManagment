@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.demo.model.OrderDetails;
+import com.demo.service.CustomerServiceImpl;
 import com.demo.service.OrdersServiceImpl;
 
 @RestController
@@ -16,8 +17,13 @@ public class OrdersController {
 	@Autowired
 	OrdersServiceImpl ordersServiceImpl;
 	
+	@Autowired
+	CustomerServiceImpl customerServiceImpl;
+	
 	@GetMapping("/GetOrders/{id}")
 	public List<OrderDetails> getOrderDetails(@PathVariable("id") String username) {
+		
+		System.out.println(customerServiceImpl);
 		
 		return ordersServiceImpl.getOrders(username);
 	}

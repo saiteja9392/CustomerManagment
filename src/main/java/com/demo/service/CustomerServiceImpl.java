@@ -6,7 +6,8 @@ import java.util.List;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import com.demo.doa.CustomerLoginRepo;
@@ -20,7 +21,7 @@ import com.demo.util.Utils;
 
 @Service
 @Transactional
-@Repository
+@Scope(value = BeanDefinition.SCOPE_PROTOTYPE)
 public class CustomerServiceImpl {
 	
 	private String Status = "";

@@ -12,19 +12,25 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.demo.model.Customer;
 import com.demo.model.CustomerLogin;
 import com.demo.service.CustomerServiceImpl;
 
+
 @RestController
+@RequestMapping("/Customer")
 public class CustomerController {
 	
 	@Autowired
@@ -34,8 +40,11 @@ public class CustomerController {
 	MessageSource messageSource;
 	
 	@GetMapping("/AllCustomers")
+	@ResponseStatus(code = HttpStatus.ACCEPTED)
+	@PreAuthorize(value = "hasRole('ADMIN')")
 	public List<Customer> listAllCustomers(){
 		
+		System.out.println(customerServiceImpl);
 		return customerServiceImpl.listAllCustomers();
 	}
 	
@@ -70,6 +79,7 @@ public class CustomerController {
 	}
 	
 	@PostMapping("/AddCustomer")
+	@PreAuthorize(value = "hasRole('CUSTOMER')")
 	public String addCustomer(@Valid @RequestBody Customer customer) {
 		
 		return customerServiceImpl.addCustomer(customer);
