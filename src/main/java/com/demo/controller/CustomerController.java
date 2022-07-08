@@ -49,6 +49,7 @@ public class CustomerController {
 	}
 	
 	@GetMapping("/AllCustomerLogins")
+	@ResponseStatus(code = HttpStatus.ACCEPTED)
 	public List<CustomerLogin> listAllCustomerLogins(){
 		
 		return customerServiceImpl.listAllCustomerLogins();
