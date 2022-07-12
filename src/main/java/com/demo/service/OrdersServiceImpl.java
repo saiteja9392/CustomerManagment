@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.demo.doa.OrdersRepo;
+import com.demo.entity.OrderDetails;
 import com.demo.exception.custom.ResourceException;
-import com.demo.model.OrderDetails;
 
 @Service
 public class OrdersServiceImpl {
@@ -17,7 +17,9 @@ public class OrdersServiceImpl {
 
 	public List<OrderDetails> getOrders(String username) {
 		
-		List<OrderDetails> orders = oRepo.getOrders(username);
+		System.out.println(oRepo.count());
+		
+		List<OrderDetails> orders = oRepo.findByUsername(username);
 		
 		if(orders == null)
 			throw new ResourceException("No Orders Found");

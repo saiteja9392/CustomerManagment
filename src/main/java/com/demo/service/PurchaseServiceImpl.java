@@ -9,11 +9,11 @@ import com.demo.doa.CustomerLoginRepo;
 import com.demo.doa.CustomerRepo;
 import com.demo.doa.OrdersRepo;
 import com.demo.doa.PurchaseRepo;
+import com.demo.entity.Customer;
+import com.demo.entity.CustomerLogin;
+import com.demo.entity.OrderDetails;
+import com.demo.entity.Purchase;
 import com.demo.exception.custom.ResourceException;
-import com.demo.model.Customer;
-import com.demo.model.CustomerLogin;
-import com.demo.model.OrderDetails;
-import com.demo.model.Purchase;
 import com.demo.util.Utils;
 
 @Service

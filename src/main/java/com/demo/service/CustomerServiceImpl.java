@@ -12,10 +12,10 @@ import org.springframework.stereotype.Service;
 
 import com.demo.doa.CustomerLoginRepo;
 import com.demo.doa.CustomerRepo;
+import com.demo.entity.Customer;
+import com.demo.entity.CustomerLogin;
 import com.demo.exception.custom.InValidRequestException;
 import com.demo.exception.custom.ResourceException;
-import com.demo.model.Customer;
-import com.demo.model.CustomerLogin;
 import com.demo.util.AES;
 import com.demo.util.Utils;
 

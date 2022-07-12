@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.demo.model.OrderDetails;
+import com.demo.entity.OrderDetails;
 import com.demo.property.custom.CustomerProperty;
 import com.demo.service.CustomerServiceImpl;
 import com.demo.service.OrdersServiceImpl;

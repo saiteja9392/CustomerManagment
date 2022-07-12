@@ -24,8 +24,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.demo.model.Customer;
-import com.demo.model.CustomerLogin;
+import com.demo.entity.Customer;
+import com.demo.entity.CustomerLogin;
 import com.demo.service.CustomerServiceImpl;
 
 
