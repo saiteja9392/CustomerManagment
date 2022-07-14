@@ -40,6 +40,8 @@ public class PurchaseServiceImpl {
 		
 		OrderDetails order = new OrderDetails();
 		
+		System.out.println(purchase.getProductName());
+		
 		if(c == null || cLogin == null) {
 			throw new ResourceException("No Login Found");
 		}
@@ -47,7 +49,7 @@ public class PurchaseServiceImpl {
 		else {
 			Purchase purchaseDetails = new Purchase();
 
-			purchaseDetails.setTransactionId(purchase.getTransactionId());
+			purchaseDetails.setTransactionId(purchaseDetails.getTransactionId());
 			purchaseDetails.setProductName(purchase.getProductName());
 			purchaseDetails.setPrice(purchase.getPrice());
 

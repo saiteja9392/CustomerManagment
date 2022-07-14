@@ -1,4 +1,4 @@
-package com.demo.property.custom;
+package com.demo.property;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;

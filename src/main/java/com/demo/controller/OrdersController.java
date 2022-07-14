@@ -3,12 +3,13 @@ package com.demo.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.demo.entity.OrderDetails;
-import com.demo.property.custom.CustomerProperty;
+import com.demo.property.CustomerProperty;
 import com.demo.service.CustomerServiceImpl;
 import com.demo.service.OrdersServiceImpl;
 
@@ -27,6 +28,9 @@ public class OrdersController {
 	@Autowired
 	CustomerProperty property;
 	
+	@Value("${spring.application.name}")
+	String applicationName;
+	
 	@GetMapping("/GetOrders/{id}")
 	public List<OrderDetails> getOrderDetails(@PathVariable("id") String username) {
 		
@@ -38,7 +42,8 @@ public class OrdersController {
 	@GetMapping("/GetCustomProperty")
 	public void getCustomProperty() {
 		
+		log.info(applicationName);
 		log.info(property.getUsername());
-		log.info(property.getPassword());
+		log.debug(property.getPassword());
 	}
 }
