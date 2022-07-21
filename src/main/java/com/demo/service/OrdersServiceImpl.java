@@ -1,6 +1,7 @@
 package com.demo.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.demo.doa.CustomerLoginRepo;
 import com.demo.doa.CustomerRepo;
@@ -27,32 +28,39 @@ public class OrdersServiceImpl {
 	@Autowired
 	OrdersRepo oRepo;
 
-	private String Status = "";
+	public String Status = "";
 
 	public List<OrderDetails> getOrders(String username) {
 		
 		System.out.println(oRepo.count());
+
+		Optional<Customer> c = cRepo.findById(username);
+
+		Optional<CustomerLogin> cLogin = cLoginRepo.findById(username);
+
+		if(!c.isPresent()|| !cLogin.isPresent())
+			throw new ResourceException("No Login Found");
 		
 		List<OrderDetails> orders = oRepo.findByUsername(username);
-		
+
 		if(orders == null)
 			throw new ResourceException("No Orders Found");
 		
 		return orders;
 	}
 
-	public String placeOrder(OrderRequest orderRequest) throws Exception {
+	public String placeOrder(OrderRequest orderRequest) {
 
-		Customer c = cRepo.findById(orderRequest.getUsername());
-		CustomerLogin cLogin = cLoginRepo.findByLoginid(orderRequest.getUsername());
+		Optional<Customer> c = cRepo.findById(orderRequest.getUsername());
+		Optional<CustomerLogin> cLogin = cLoginRepo.findById(orderRequest.getUsername());
 
 		OrderDetails order = new OrderDetails();
 
 		System.out.println(orderRequest.getProductName());
 
-		if(c == null || cLogin == null) {
+		if(!c.isPresent()|| !cLogin.isPresent())
 			throw new ResourceException("No Login Found");
-		}
+
 
 		else {
 

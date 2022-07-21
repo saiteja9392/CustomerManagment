@@ -20,5 +20,5 @@ public class CustomerLogin {
 	private String password;
 	private String lastlogin;
 	
-	private String isAdmin;
+	private boolean admin;
 }

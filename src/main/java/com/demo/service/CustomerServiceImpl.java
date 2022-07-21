@@ -1,15 +1,5 @@
 package com.demo.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.transaction.Transactional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
-
 import com.demo.doa.CustomerLoginRepo;
 import com.demo.doa.CustomerRepo;
 import com.demo.entity.Customer;
@@ -18,67 +8,65 @@ import com.demo.exception.custom.InValidRequestException;
 import com.demo.exception.custom.ResourceException;
 import com.demo.util.AES;
 import com.demo.util.Utils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
 @Scope(value = BeanDefinition.SCOPE_PROTOTYPE)
 public class CustomerServiceImpl {
 	
-	private String Status = "";
+	public String Status = "";
 	
 	@Autowired
 	CustomerRepo repo;
 	
 	@Autowired
-	CustomerLoginRepo loginrepo;
+	CustomerLoginRepo loginRepo;
 	
 	public List<Customer> listAllCustomers(){
-		
-		List<Customer> list = new ArrayList<Customer>();
-		
-		list = repo.findAll();
-		
-		return list;
-		
+
+		return repo.findAll();
 	}
 	
 	public List<CustomerLogin> listAllCustomerLogins(){
-		
-		List<CustomerLogin> list = new ArrayList<CustomerLogin>();
-		
-		list = loginrepo.findAll();
-		
-		return list;
-		
+
+		return loginRepo.findAll();
 	}
 	
-	public Customer getCustomer(String username) throws Exception {
+	public Customer getCustomer(String username) {
 		
-		Customer customer = repo.findById(username);
+		Optional<Customer> customer = repo.findById(username);
 		
-		if(customer == null){
+		if(!customer.isPresent()){
 			throw new ResourceException("No Customer found with the username");
 		}
 		
-		return customer;
+		return customer.get();
 	}
 	
-	public CustomerLogin getCustomerLogin(String username) throws Exception {
+	public CustomerLogin getCustomerLogin(String username) {
 		
-		CustomerLogin customerLogin = loginrepo.findByLoginid(username);
+		Optional<CustomerLogin> customerLogin = loginRepo.findById(username);
 		
-		if(customerLogin == null){
+		if(!customerLogin.isPresent()){
 			throw new ResourceException("No Customer Login found with the username");
 		}
 		
-		return customerLogin;
+		return customerLogin.get();
 	}
 	
 	public String addCustomer(Customer customer) {
 		
-		Customer findCustomer = repo.findById(customer.getId());
+		Optional<Customer> findCustomer = repo.findById(customer.getId());
 		
-		if(findCustomer == null) {
+		if(!findCustomer.isPresent()) {
 			repo.save(customer);
 			Status = "Customer Added Successfully";
 		}
@@ -91,22 +79,22 @@ public class CustomerServiceImpl {
 
 	public String updateCustomerDetails(String username, Customer customer) {
 		
-		Customer c = repo.findById(username);
+		Optional<Customer> c = repo.findById(username);
 		
-		if(c == null){
+		if(!c.isPresent()){
 			throw new ResourceException("No Customer Record Found");
 		}
 
 		else{
 			
-			if (!c.getId().contentEquals(customer.getId())) {
+			if (!c.get().getId().contentEquals(customer.getId())) {
 				throw new ResourceException("Both Id's are different, please check");
 			} 
 			
 			else {
 
-				if (c.getId().contentEquals(customer.getId()) && c.getFirstname().contentEquals(customer.getFirstname())
-						&& c.getLastname().contentEquals(customer.getLastname())) {
+				if (c.get().getId().contentEquals(customer.getId()) && c.get().getFirstname().contentEquals(customer.getFirstname())
+						&& c.get().getLastname().contentEquals(customer.getLastname())) {
 
 					Status = "No update in Customer Record";
 				}
@@ -127,32 +115,24 @@ public class CustomerServiceImpl {
 		
 		String timeStamp = Utils.getCurrentTimeStamp();
 		
-		CustomerLogin user = loginrepo.findByLoginid(username);
+		Optional<CustomerLogin> user = loginRepo.findById(username);
 
-		if (user != null) {
-			if (user.getLoginid().contentEquals(username)) {
+		if (!user.isPresent()) {
 
-				if (password.contentEquals(AES.decrypt(user.getPassword()))) {
+			if (password.contentEquals(AES.decrypt(user.get().getPassword()))) {
 
-					Status = "Login Success";
-					
-					user.setLastlogin(timeStamp);
-					user.setLoginid(username);
-					
-					loginrepo.updateLastLogin(user.getLastlogin(),user.getLoginid());
-					
-				} else {
-					throw new InValidRequestException("Login Failed");
-				}
+				Status = "Login Success";
+
+				user.get().setLastlogin(timeStamp);
+
+				loginRepo.save(user.get());
+
+			} else {
+				throw new InValidRequestException("Login Failed");
 			}
-
-			else {
-				throw new InValidRequestException("User Login Not Found");
-			}
-
 		}
 
-		else if (user == null) {
+		else {
 			throw new InValidRequestException("User Login Not Found");
 		}
 		
@@ -161,36 +141,33 @@ public class CustomerServiceImpl {
 
 	public String createCustomerLogin(CustomerLogin customerLogin){
 		
-		Customer c = repo.findById(customerLogin.getLoginid());
+		Optional<Customer> c = repo.findById(customerLogin.getLoginid());
 		
-		if(c == null) {
+		if(!c.isPresent()) {
 			
 			throw new ResourceException("Customer Details not Found");
 		}
 		
 		else{
 			
-			CustomerLogin user = loginrepo.findByLoginid(customerLogin.getLoginid());
+			Optional<CustomerLogin> user = loginRepo.findById(customerLogin.getLoginid());
 			
-			if(user == null) {
+			if(!user.isPresent()) {
 				
 				CustomerLogin cLogin = new CustomerLogin();
 				
 				cLogin.setLoginid(customerLogin.getLoginid());
 				cLogin.setPassword(AES.encrypt(customerLogin.getPassword()));
-				cLogin.setIsAdmin(customerLogin.getIsAdmin());
+				cLogin.setAdmin(customerLogin.isAdmin());
 				
-				if(customerLogin.getIsAdmin() == "")
-					cLogin.setIsAdmin("NULL");
-				
-				loginrepo.save(cLogin);
+				loginRepo.save(cLogin);
 				
 				Status = "CustomerLogin Added Successfully";
 			}
 			
-			else if (customerLogin.getLoginid().contentEquals(user.getLoginid())) {
+			else if (customerLogin.getLoginid().contentEquals(user.get().getLoginid())) {
 	
-				throw new InValidRequestException("CustomerLogin Already exsists with this username");
+				throw new InValidRequestException("CustomerLogin Already exists with this username");
 			}
 		}
 		
@@ -199,24 +176,21 @@ public class CustomerServiceImpl {
 
 	public String updatePassword(String username, String password) {
 
-		CustomerLogin user = loginrepo.findByLoginid(username);
+		Optional<CustomerLogin> user = loginRepo.findById(username);
 
-		if (user != null) {
-			if (user.getLoginid().contentEquals(username)) {
-				
-				if(AES.decrypt(user.getPassword()).contentEquals(password)) {
-					
-					throw new InValidRequestException("Old and New Password are same");
-				}
-				else {
-				
-					loginrepo.updatePassword(username, AES.encrypt(password));
-					Status = "Password updated Successfully";
-				}
-				
+		if (user.isPresent()) {
+
+			if(AES.decrypt(user.get().getPassword()).contentEquals(password)) {
+
+				throw new InValidRequestException("Old and New Password are same");
 			}
 			else {
-				throw new ResourceException("CustomerLogin Login Not Found");
+
+				user.get().setPassword(AES.encrypt(password));
+
+				loginRepo.save(user.get());
+
+				Status = "Password updated Successfully";
 			}
 		}
 		else {
@@ -226,34 +200,34 @@ public class CustomerServiceImpl {
 		return Status;
 	}
 	
-	public String deleteCustomer(String admin,String deleteCustomer) {
+	public String deleteCustomer(String adminUser,String deleteCustomer) {
 		
-		Customer customer = repo.findById(deleteCustomer);
-		CustomerLogin customerLogin = loginrepo.findByLoginid(deleteCustomer);
+		Optional<Customer> customer = repo.findById(deleteCustomer);
+		Optional<CustomerLogin> customerLogin = loginRepo.findById(deleteCustomer);
 		
-		if(customer == null) {
+		if(!customer.isPresent()) {
 			throw new ResourceException("Customer Details not Found");
 		}
 		
 		else{
 			
-			CustomerLogin isAdminUser = loginrepo.findByLoginid(admin);
+			Optional<CustomerLogin> isAdminUser = loginRepo.findById(adminUser);
 			
-			if(isAdminUser != null && isAdminUser.getIsAdmin().contentEquals("A")) {
+			if(isAdminUser.isPresent() && isAdminUser.get().isAdmin()) {
 			
-				repo.delete(customer);
+				repo.delete(customer.get());
 
-				if (customerLogin != null) {
-					loginrepo.delete(customerLogin);
+				if (!customerLogin.isPresent()) {
+					loginRepo.delete(customerLogin.get());
 				}
 
 				Status = "Customer details deleted Successfully";
 			}
 			
-			else if(isAdminUser == null) {
+			else if(!isAdminUser.isPresent()) {
 				throw new InValidRequestException("ADMIN CustomerLogin Details Not Found");
 			}
-			
+
 			else {
 				throw new InValidRequestException("Customer is not an ADMIN User");
 			}
@@ -262,29 +236,32 @@ public class CustomerServiceImpl {
 		return Status;
 	}
 
-	public String decryptedPassword(String isAdmin, String username) {
+	public String decryptedPassword(String adminUser, String username) {
 		
-		Customer customer = repo.findById(username);
-		CustomerLogin customerLogin = loginrepo.findByLoginid(username);
+		Optional<Customer> customer = repo.findById(username);
+		Optional<CustomerLogin> customerLogin = loginRepo.findById(username);
 		
-		if(customer == null) {
+		if(!customer.isPresent()) {
 			throw new ResourceException("Customer Details not Found");
 		}
 		
 		else {
 			
-			if(customerLogin == null) {
+			if(!customerLogin.isPresent()) {
 				throw new ResourceException("CustomerLogin Details not Found");
 			}
 			
 			else {
-				CustomerLogin isAdminUser = loginrepo.findByLoginid(isAdmin);
+				Optional<CustomerLogin> isAdminUser = loginRepo.findById(adminUser);
 
-				if (isAdminUser != null && isAdminUser.getIsAdmin().contentEquals("A")) {
+				if (isAdminUser.isPresent() && isAdminUser.get().isAdmin()) {
 
-					String decryptedPassword = AES.decrypt(customerLogin.getPassword());
+					String decryptedPassword = AES.decrypt(customerLogin.get().getPassword());
 
-					Status = "DecryptedPassword for " + customerLogin.getLoginid() + " is " + decryptedPassword;
+					Status = "DecryptedPassword for " + customerLogin.get().getLoginid() + " is " + decryptedPassword;
+				}
+				else {
+					throw new InValidRequestException("Customer is not an ADMIN User");
 				}
 			}
 		}

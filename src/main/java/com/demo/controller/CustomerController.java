@@ -14,15 +14,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.demo.entity.Customer;
 import com.demo.entity.CustomerLogin;
@@ -56,7 +48,7 @@ public class CustomerController {
 	}
 	
 	@GetMapping("/GetCustomer/{id}")
-	public EntityModel<Customer> getCustomer(@PathVariable("id") String username) throws Exception {
+	public EntityModel<Customer> getCustomer(@PathVariable("id") String username) {
 		
 		Customer customer = customerServiceImpl.getCustomer(username);
 		
@@ -68,13 +60,13 @@ public class CustomerController {
 	}
 	
 	@PostMapping("/GetCustomer")
-	public Customer getAuthCustomer(@RequestBody Customer customer) throws Exception {
+	public Customer getAuthCustomer(@RequestBody Customer customer) {
 		
 		return customerServiceImpl.getCustomer(customer.getId());
 	}
 	
 	@GetMapping("/GetCustomerLogin/{id}")
-	public CustomerLogin getCustomerLogin(@PathVariable("id") String username) throws Exception {
+	public CustomerLogin getCustomerLogin(@PathVariable("id") String username) {
 		
 		return customerServiceImpl.getCustomerLogin(username);
 	}
@@ -92,8 +84,8 @@ public class CustomerController {
 		return customerServiceImpl.updateCustomerDetails(username,customer);
 	}
 	
-	@PostMapping("/Login/{loginid}/{password}")
-	public String login(@PathVariable("loginid") String id, @PathVariable("password") String pass){
+	@PostMapping("/Login")
+	public String login(@RequestParam("loginId") String id, @RequestParam("password") String pass){
 		
 		return customerServiceImpl.login(id,pass);
 	}
@@ -104,22 +96,22 @@ public class CustomerController {
 		return customerServiceImpl.createCustomerLogin(customerLogin);
 	}
 	
-	@PutMapping("/UpdatePassword/{loginid}/{password}")
-	public String updatePassword(@PathVariable("loginid") String username, @PathVariable("password") String password) {
+	@PutMapping("/UpdatePassword")
+	public String updatePassword(@RequestParam String username, @RequestParam String password) {
 	
 		return customerServiceImpl.updatePassword(username,password);
 	}
 	
-	@DeleteMapping("/DeleteCustomer/{isAdmin}/{loginid}")
-	public String deleteCustomer(@PathVariable("isAdmin") String admin, @PathVariable("loginid") String deleteCustomer) {
+	@DeleteMapping("/DeleteCustomer")
+	public String deleteCustomer(@RequestParam String adminUser, @RequestParam String deleteCustomer) {
 		
-		return customerServiceImpl.deleteCustomer(admin,deleteCustomer);
+		return customerServiceImpl.deleteCustomer(adminUser,deleteCustomer);
 	}
 	
-	@GetMapping("/Decrypt/{isAdmin}/{loginid}")
-	public String decryptedPassword(@PathVariable("isAdmin") String isAdmin, @PathVariable("loginid") String username) {
+	@GetMapping("/Decrypt")
+	public String decryptedPassword(@RequestParam String adminUser, @RequestParam String username) {
 		
-		return customerServiceImpl.decryptedPassword(isAdmin,username);
+		return customerServiceImpl.decryptedPassword(adminUser,username);
 	}
 	
 	@GetMapping("/Int")

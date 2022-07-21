@@ -39,7 +39,7 @@ public class OrdersController {
 	}
 
 	@PostMapping("/PlaceOrder")
-	public String placeOrder(@RequestBody OrderRequest orderRequest) throws Exception {
+	public String placeOrder(@RequestBody OrderRequest orderRequest){
 
 		return ordersServiceImpl.placeOrder(orderRequest);
 	}
