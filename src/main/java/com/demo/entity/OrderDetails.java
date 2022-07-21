@@ -1,13 +1,11 @@
 package com.demo.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Data;
 
+@Data
 @Entity
 @Table(name = "orders")
 public class OrderDetails {
@@ -20,33 +18,9 @@ public class OrderDetails {
 	private String username;
 	
 	private String product;
-	
-	private String dateofpurchase;
+
+	@Column(name = "dateofpurchase")
+	private String dateOfPurchase;
 	
 	private int price;
-	
-	public String getUsername() {
-		return username;
-	}
-	public void setUsername(String username) {
-		this.username = username;
-	}
-	public String getProduct() {
-		return product;
-	}
-	public void setProduct(String product) {
-		this.product = product;
-	}
-	public String getDateofPurchase() {
-		return dateofpurchase;
-	}
-	public void setDateofPurchase(String dateofPurchase) {
-		this.dateofpurchase = dateofPurchase;
-	}
-	public int getPrice() {
-		return price;
-	}
-	public void setPrice(int price) {
-		this.price = price;
-	}
 }

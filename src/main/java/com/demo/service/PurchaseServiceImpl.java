@@ -57,7 +57,7 @@ public class PurchaseServiceImpl {
 
 			order.setUsername(username);
 			order.setProduct(purchase.getProductName());
-			order.setDateofPurchase(Utils.getOrderDate());
+			order.setDateOfPurchase(Utils.getOrderDate());
 			order.setPrice(purchase.getPrice());
 			
 			oRepo.save(order);
