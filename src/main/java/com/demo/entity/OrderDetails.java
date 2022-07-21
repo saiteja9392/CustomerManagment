@@ -5,14 +5,17 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 @Data
 @Entity
 @Table(name = "orders")
 public class OrderDetails {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer sno;
+	@Column(name = "transactionid")
+	private String transactionId;
 	
 	@JsonIgnore
 	private String username;
@@ -23,4 +26,13 @@ public class OrderDetails {
 	private String dateOfPurchase;
 	
 	private int price;
+
+	public void setTransactionId(String transactionId) {
+
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+		LocalDateTime now = LocalDateTime.now();
+		transactionId = dtf.format(now);
+
+		this.transactionId = transactionId;
+	}
 }

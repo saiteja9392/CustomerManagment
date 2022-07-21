@@ -2,11 +2,10 @@ package com.demo.controller;
 
 import java.util.List;
 
+import com.demo.model.OrderRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.demo.entity.OrderDetails;
 import com.demo.property.CustomerProperty;
@@ -24,7 +23,7 @@ public class OrdersController {
 	
 	@Autowired
 	CustomerServiceImpl customerServiceImpl;
-	
+
 	@Autowired
 	CustomerProperty property;
 	
@@ -37,6 +36,12 @@ public class OrdersController {
 		System.out.println(customerServiceImpl);
 		
 		return ordersServiceImpl.getOrders(username);
+	}
+
+	@PostMapping("/PlaceOrder")
+	public String placeOrder(@RequestBody OrderRequest orderRequest) throws Exception {
+
+		return ordersServiceImpl.placeOrder(orderRequest);
 	}
 	
 	@GetMapping("/GetCustomProperty")
