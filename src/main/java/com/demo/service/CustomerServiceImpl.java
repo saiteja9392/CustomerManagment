@@ -77,35 +77,17 @@ public class CustomerServiceImpl {
 		return Status;
 	}
 
-	public String updateCustomerDetails(String username, Customer customer) {
+	public String updateCustomerDetails(Customer customer) {
 		
-		Optional<Customer> c = repo.findById(username);
+		Optional<Customer> c = repo.findById(customer.getId());
 		
 		if(!c.isPresent()){
 			throw new ResourceException("No Customer Record Found");
 		}
 
 		else{
-			
-			if (!c.get().getId().contentEquals(customer.getId())) {
-				throw new ResourceException("Both Id's are different, please check");
-			} 
-			
-			else {
-
-				if (c.get().getId().contentEquals(customer.getId()) && c.get().getFirstname().contentEquals(customer.getFirstname())
-						&& c.get().getLastname().contentEquals(customer.getLastname())) {
-
-					Status = "No update in Customer Record";
-				}
-
-				else {
-
-					repo.save(customer);
-					Status = "Customer Record Updated Successfully";
-				}
-			}
-
+			repo.save(customer);
+			Status = "Customer Record Saved Successfully";
 		}
 	
 		return Status;
@@ -117,7 +99,7 @@ public class CustomerServiceImpl {
 		
 		Optional<CustomerLogin> user = loginRepo.findById(username);
 
-		if (!user.isPresent()) {
+		if (user.isPresent()) {
 
 			if (password.contentEquals(AES.decrypt(user.get().getPassword()))) {
 
@@ -217,7 +199,7 @@ public class CustomerServiceImpl {
 			
 				repo.delete(customer.get());
 
-				if (!customerLogin.isPresent()) {
+				if (customerLogin.isPresent()) {
 					loginRepo.delete(customerLogin.get());
 				}
 

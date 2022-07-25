@@ -3,7 +3,7 @@ package com.demo.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -15,7 +15,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+//@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class CustomerSecurity extends WebSecurityConfigurerAdapter{
 
 	@Autowired
@@ -27,8 +27,10 @@ public class CustomerSecurity extends WebSecurityConfigurerAdapter{
 		http
 			.csrf().disable()
 			.authorizeRequests()
-			//.antMatchers(HttpMethod.GET, "/Customer/*").hasRole("CUSTOMER")
-			//.antMatchers(HttpMethod.POST, "/Customer/*").hasRole("ADMIN")
+			.antMatchers(HttpMethod.GET, "/Customer/*").hasRole("CUSTOMER")
+			.antMatchers(HttpMethod.POST, "/Customer/*").hasRole("ADMIN")
+			.antMatchers(HttpMethod.PUT, "/Customer/*").hasRole("ADMIN")
+			.antMatchers(HttpMethod.DELETE, "/Customer/*").hasRole("ADMIN")
 			.anyRequest()
 			.authenticated()
 			.and()
