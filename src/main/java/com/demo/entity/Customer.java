@@ -1,9 +1,12 @@
 package com.demo.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
@@ -12,21 +15,24 @@ import javax.validation.constraints.Size;
 import java.util.Date;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "customer")
 @EntityListeners(AuditingEntityListener.class)
 public class Customer {
 
 	@Id
-	@Column(nullable = false, updatable = false)
+	@Column(nullable = false)
 	private String id;
 	
 	@NotNull
-	@Size(min = 1,message = "FirstName should have atleast 1 Characters")
+	@Size(min = 1,message = "FirstName should have at-least 1 Characters")
 	private String firstname;
 	
 	@NotNull
-	@Size(min = 1,message = "LastName should have atleast 1 Characters")
+	@Size(min = 1,message = "LastName should have at-least 1 Characters")
 	private String lastname;
 
 	@NotNull
@@ -35,12 +41,14 @@ public class Customer {
 	@NotNull
 	private String gender;
 
-	@CreationTimestamp
+	@CreatedDate
+	@Temporal(TemporalType.DATE)
 	@Column(name = "createddate",nullable = false, updatable = false)
 	private Date createdDate;
 
 
-	@UpdateTimestamp
+	@LastModifiedDate
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "modifieddate")
 	private Date modifiedDate;
 

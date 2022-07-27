@@ -1,22 +1,19 @@
 package com.demo.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
 import com.sun.istack.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.LastModifiedDate;
 
+import javax.persistence.*;
 import java.util.Date;
 
 @Data
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "customerlogin")
 public class CustomerLogin {
@@ -25,11 +22,16 @@ public class CustomerLogin {
 	@NotNull
 	private String loginid;
 	private String password;
-	private String lastlogin;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date lastlogin;
 	
 	private boolean admin;
 
 	@CreationTimestamp
 	@Column(name = "createddate",nullable = false, updatable = false)
 	private Date createdDate;
+
+	@Version
+	private Long version;
 }

@@ -27,6 +27,8 @@ public class CustomerSecurity extends WebSecurityConfigurerAdapter{
 		http
 			.csrf().disable()
 			.authorizeRequests()
+			.antMatchers(HttpMethod.GET, "/Customer/AllCustomers").hasRole("ADMIN")
+			.antMatchers(HttpMethod.GET, "/Customer/AllCustomerLogins").hasRole("ADMIN")
 			.antMatchers(HttpMethod.GET, "/Customer/*").hasRole("CUSTOMER")
 			.antMatchers(HttpMethod.POST, "/Customer/*").hasRole("ADMIN")
 			.antMatchers(HttpMethod.PUT, "/Customer/*").hasRole("ADMIN")
@@ -41,17 +43,17 @@ public class CustomerSecurity extends WebSecurityConfigurerAdapter{
 	@Override
 	protected UserDetailsService userDetailsService() {
 	  
-		  UserDetails adminrole = User.builder().username("admin")
+		  UserDetails adminRole = User.builder().username("admin")
 				  								.password(encoder.encode("admin")) 
 				  								.roles("ADMIN")
 				  								.build();
 		  
-		  UserDetails customerrole = User.builder().username("customer")
+		  UserDetails customerRole = User.builder().username("customer")
 												.password(encoder.encode("customer")) 
 												.roles("CUSTOMER")
 												.build();
 												  
-		  return new InMemoryUserDetailsManager(adminrole,customerrole); 
+		  return new InMemoryUserDetailsManager(adminRole,customerRole);
 		  
 	}
 	
