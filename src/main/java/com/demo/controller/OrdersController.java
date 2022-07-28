@@ -3,8 +3,8 @@ package com.demo.controller;
 import com.demo.entity.OrderDetails;
 import com.demo.model.OrderRequest;
 import com.demo.property.CustomerProperty;
-import com.demo.service.CustomerServiceImpl;
-import com.demo.service.OrdersServiceImpl;
+import com.demo.service.CustomerService;
+import com.demo.service.OrderService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,10 +17,10 @@ import java.util.List;
 public class OrdersController {
 
 	@Autowired
-	OrdersServiceImpl ordersServiceImpl;
+	OrderService orderService;
 	
 	@Autowired
-	CustomerServiceImpl customerServiceImpl;
+	CustomerService customerService;
 
 	@Autowired
 	CustomerProperty property;
@@ -31,15 +31,15 @@ public class OrdersController {
 	@GetMapping("/GetOrders/{id}")
 	public List<OrderDetails> getOrderDetails(@PathVariable("id") String username) {
 		
-		System.out.println(customerServiceImpl);
+		System.out.println(customerService);
 		
-		return ordersServiceImpl.getOrders(username);
+		return orderService.getOrders(username);
 	}
 
 	@PostMapping("/PlaceOrder")
-	public String placeOrder(@RequestBody OrderRequest orderRequest){
+	public String placeOrder(@RequestParam String username, @RequestBody OrderRequest orderRequest){
 
-		return ordersServiceImpl.placeOrder(orderRequest);
+		return orderService.placeOrder(username,orderRequest);
 	}
 	
 	@GetMapping("/GetCustomProperty")
@@ -48,9 +48,5 @@ public class OrdersController {
 		log.info(applicationName);
 		log.info(property.getUsername());
 		log.debug(property.getPassword());
-
-		System.out.println("Added In Github");
-
-		System.out.println("Added In Local");
 	}
 }

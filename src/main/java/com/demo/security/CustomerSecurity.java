@@ -33,6 +33,7 @@ public class CustomerSecurity extends WebSecurityConfigurerAdapter{
 			.antMatchers(HttpMethod.POST, "/Customer/*").hasRole("ADMIN")
 			.antMatchers(HttpMethod.PUT, "/Customer/*").hasRole("ADMIN")
 			.antMatchers(HttpMethod.DELETE, "/Customer/*").hasRole("ADMIN")
+			.antMatchers(HttpMethod.POST, "/Product/AddProduct").hasRole("ADMIN")
 			.anyRequest()
 			.authenticated()
 			.and()

@@ -1,11 +1,11 @@
 package com.demo.service;
 
-import com.demo.doa.CustomerLoginRepo;
-import com.demo.doa.CustomerRepo;
 import com.demo.entity.Customer;
 import com.demo.entity.CustomerLogin;
 import com.demo.exception.custom.InValidRequestException;
 import com.demo.exception.custom.ResourceException;
+import com.demo.repository.CustomerLoginRepo;
+import com.demo.repository.CustomerRepo;
 import com.demo.util.AES;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

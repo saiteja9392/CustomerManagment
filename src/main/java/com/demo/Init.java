@@ -1,10 +1,13 @@
 package com.demo;
 
-import com.demo.doa.CustomerLoginRepo;
-import com.demo.doa.CustomerRepo;
 import com.demo.entity.Customer;
 import com.demo.entity.CustomerLogin;
+import com.demo.entity.Product;
+import com.demo.repository.CustomerLoginRepo;
+import com.demo.repository.CustomerRepo;
+import com.demo.repository.ProductRepo;
 import com.demo.util.AES;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +15,7 @@ import javax.annotation.PostConstruct;
 import java.util.Date;
 import java.util.Optional;
 
+@Slf4j
 @Component
 public class Init {
 
@@ -21,11 +25,20 @@ public class Init {
     @Autowired
     CustomerLoginRepo customerLoginRepo;
 
+    @Autowired
+    ProductRepo productRepo;
+
     private static final Customer c;
 
     private static final CustomerLogin cl;
 
+    private static final Product p1;
+
+    private static final Product p2;
+
     static {
+
+        log.debug("Inside static block");
 
         c = Customer.builder()
                 .id("admin")
@@ -46,22 +59,59 @@ public class Init {
                 .lastlogin(null)
                 .version(0L)
                 .build();
+
+        p1 = Product.builder()
+                .productId("CM001")
+                .productName("Note Books")
+                .price(25)
+                .manufacturer("ClassMate")
+                .quantityInStore(10)
+                .createdBy("system")
+                .build();
+
+        p2 = Product.builder()
+                .productId("CM002")
+                .productName("Text Books")
+                .price(50)
+                .manufacturer("Oxford")
+                .quantityInStore(0)
+                .createdBy("system")
+                .build();
+
     }
 
     @PostConstruct
     public void addAdminUserWhenStart(){
 
+        log.debug("Inside addAdminUserWhenStart");
+
         Optional<Customer> customer = customerRepo.findById(c.getId());
         Optional<CustomerLogin> customerLogin = customerLoginRepo.findById(cl.getLoginid());
 
         if(!customer.isPresent()) {
+            log.debug("Inside !customer.isPresent()");
+
             customerRepo.save(c);
 
-            if(!customerLogin.isPresent())
-                customerLoginRepo.save(cl);
-        }
-        if(customer.isPresent() && !customerLogin.isPresent())
-            customerLoginRepo.save(cl);
+            if(!customerLogin.isPresent()) {
+                log.debug("Inside !customerLogin.isPresent()");
 
+                customerLoginRepo.save(cl);
+            }
+        }
+
+        if(customer.isPresent() && !customerLogin.isPresent()) {
+            log.debug("Inside customer.isPresent() && !customerLogin.isPresent()");
+
+            customerLoginRepo.save(cl);
+        }
+
+        Optional<Product> productOne = productRepo.findById(p1.getProductId());
+        Optional<Product> productTwo = productRepo.findById(p2.getProductId());
+
+        if(!productOne.isPresent())
+            productRepo.save(p1);
+        if(!productTwo.isPresent())
+            productRepo.save(p2);
     }
 }
