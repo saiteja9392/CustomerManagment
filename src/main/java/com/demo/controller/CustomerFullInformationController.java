@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class CustomerFullInformation {
+public class CustomerFullInformationController {
 
 
     @Autowired

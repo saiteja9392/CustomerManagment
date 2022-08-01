@@ -72,11 +72,11 @@ public class WalletService {
         if(!walletById.isPresent())
             throw new ResourceException("Wallet Not Found!!!");
 
-        walletRepo.delete(walletById.get());
-
         customerLoginByWalletId.get().setWallet(null);
 
         customerLoginRepo.save(customerLoginByWalletId.get());
+
+        walletRepo.delete(walletById.get());
 
         return Response.buildResponse("Wallet Has Been Deleted");
     }
