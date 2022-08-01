@@ -10,6 +10,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -19,7 +20,7 @@ import java.time.format.DateTimeFormatter;
 @ToString
 @Entity
 @Table(name = "orders")
-public class OrderDetails {
+public class Orders {
 
 	@Id
 	@Column(name = "transactionid")
@@ -32,8 +33,12 @@ public class OrderDetails {
 
 	@Column(name = "dateofpurchase")
 	private String dateOfPurchase;
-	
-	private int price;
+
+	@NotNull
+	private Integer quantity;
+
+	@Column(name = "totalprice")
+	private int totalPrice;
 
 	public void setTransactionId(String transactionId) {
 

@@ -3,9 +3,11 @@ package com.demo;
 import com.demo.entity.Customer;
 import com.demo.entity.CustomerLogin;
 import com.demo.entity.Product;
+import com.demo.entity.Wallet;
 import com.demo.repository.CustomerLoginRepo;
 import com.demo.repository.CustomerRepo;
 import com.demo.repository.ProductRepo;
+import com.demo.repository.WalletRepo;
 import com.demo.util.AES;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,13 +30,18 @@ public class Init {
     @Autowired
     ProductRepo productRepo;
 
+    @Autowired
+    WalletRepo walletRepo;
+
     private static final Customer c;
 
-    private static final CustomerLogin cl;
+    private static CustomerLogin cl;
 
     private static final Product p1;
 
     private static final Product p2;
+
+    private static Wallet w;
 
     static {
 
@@ -51,13 +58,19 @@ public class Init {
                 .createdBy("system")
                 .build();
 
+        w = Wallet.builder()
+                .walletId("admin")
+                .balance(10000)
+                .status(true)
+                .build();
+
         cl = CustomerLogin.builder()
                 .loginid("admin")
                 .password(AES.encrypt("admin"))
                 .admin(true)
                 .createdDate(new Date())
                 .lastlogin(null)
-                .version(0L)
+                .wallet(w)
                 .build();
 
         p1 = Product.builder()
@@ -77,13 +90,17 @@ public class Init {
                 .quantityInStore(0)
                 .createdBy("system")
                 .build();
-
     }
 
     @PostConstruct
     public void addAdminUserWhenStart(){
 
         log.debug("Inside addAdminUserWhenStart");
+
+        Optional<Wallet> walletAdmin = walletRepo.findById("admin");
+
+        if(!walletAdmin.isPresent())
+            walletRepo.save(w);
 
         Optional<Customer> customer = customerRepo.findById(c.getId());
         Optional<CustomerLogin> customerLogin = customerLoginRepo.findById(cl.getLoginid());

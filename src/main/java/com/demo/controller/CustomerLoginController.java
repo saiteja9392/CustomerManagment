@@ -35,13 +35,13 @@ public class CustomerLoginController {
         return customerLoginService.createCustomerLogin(customerLogin);
     }
 
-    @PutMapping("/UpdateCustomer")
+    @PutMapping("/UpdateCustomerLogin")
     public ResponseEntity<CustomerLogin> updateCustomerDetails(@RequestBody CustomerLogin customerLogin) {
 
         return customerLoginService.updateCustomerLogin(customerLogin);
     }
 
-    @DeleteMapping("/DeleteCustomer")
+    @DeleteMapping("/DeleteCustomerLogin")
     public String deleteCustomer(@RequestParam String adminUser, @RequestParam String deleteCustomer) {
 
         return customerLoginService.deleteCustomerLogin(adminUser, deleteCustomer);

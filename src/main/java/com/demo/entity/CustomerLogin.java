@@ -30,6 +30,7 @@ public class CustomerLogin {
 	@Column(name = "createddate",nullable = false, updatable = false)
 	private Date createdDate;
 
-	@Version
-	private Long version;
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "walletkey")
+	private Wallet wallet;
 }

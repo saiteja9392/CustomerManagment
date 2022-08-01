@@ -37,7 +37,7 @@ public class CustomerLoginService {
         Optional<CustomerLogin> customerLogin = loginRepo.findById(username);
 
         if(!customerLogin.isPresent()){
-            throw new ResourceException("No Customer Login found with the username");
+            throw new ResourceException("No Customer Login Found With The Username");
         }
 
         return customerLogin.get();
@@ -51,7 +51,7 @@ public class CustomerLoginService {
 
         if(!c.isPresent()) {
 
-            throw new ResourceException("Customer Details not Found");
+            throw new ResourceException("Customer Details Not Found");
         }
 
         else{
@@ -71,7 +71,7 @@ public class CustomerLoginService {
 
             else if (customerLogin.getLoginid().contentEquals(user.get().getLoginid())) {
 
-                throw new InValidRequestException("CustomerLogin Already exists with this username");
+                throw new InValidRequestException("CustomerLogin Already Exists With This Username");
             }
         }
 
@@ -98,7 +98,7 @@ public class CustomerLoginService {
         }
 
         else {
-            throw new InValidRequestException("User Login Not Found");
+            throw new InValidRequestException("Customer Login Not Found");
         }
 
         return Status;
@@ -110,13 +110,13 @@ public class CustomerLoginService {
         Optional<CustomerLogin> customerLogin = loginRepo.findById(username);
 
         if(!customer.isPresent()) {
-            throw new ResourceException("Customer Details not Found");
+            throw new ResourceException("Customer Details Not Found");
         }
 
         else {
 
             if(!customerLogin.isPresent()) {
-                throw new ResourceException("CustomerLogin Details not Found");
+                throw new ResourceException("CustomerLogin Details Not Found");
             }
 
             else {
@@ -129,7 +129,7 @@ public class CustomerLoginService {
                     Status = "DecryptedPassword for " + customerLogin.get().getLoginid() + " is " + decryptedPassword;
                 }
                 else {
-                    throw new InValidRequestException("Customer is not an ADMIN User");
+                    throw new InValidRequestException("Customer Is Not An ADMIN User");
                 }
             }
         }
@@ -145,7 +145,7 @@ public class CustomerLoginService {
 
             if(AES.decrypt(user.get().getPassword()).contentEquals(password)) {
 
-                throw new InValidRequestException("Old and New Password are same");
+                throw new InValidRequestException("Old And New Password Are Same");
             }
             else {
 
@@ -157,7 +157,7 @@ public class CustomerLoginService {
             }
         }
         else {
-            throw new ResourceException("CustomerLogin Login Not Found");
+            throw new ResourceException("Customer Login Not Found");
         }
 
         return Status;
@@ -183,7 +183,7 @@ public class CustomerLoginService {
         Optional<CustomerLogin> customerLogin = loginRepo.findById(deleteCustomer);
 
         if(!customerLogin.isPresent()) {
-            throw new ResourceException("Customer Login Details not Found");
+            throw new ResourceException("Customer Login Details Not Found");
         }
 
         else{
@@ -192,10 +192,10 @@ public class CustomerLoginService {
 
             if(admin.isPresent() && admin.get().isAdmin()) {
                 loginRepo.delete(customerLogin.get());
-                Status = "Customer Login Record Delete";
+                Status = "Customer Login Record Deleted";
             }
             else if(!admin.isPresent()) {
-                throw new InValidRequestException("ADMIN CustomerLogin Details Not Found");
+                throw new InValidRequestException("Admin Details Not Found");
             }
             else
                 throw new ResourceException("Customer Login Not ADMIN User");
