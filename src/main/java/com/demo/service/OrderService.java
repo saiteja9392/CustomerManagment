@@ -9,6 +9,7 @@ import com.demo.util.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -31,6 +32,9 @@ public class OrderService {
 
 	@Autowired
 	WalletRepo walletRepo;
+
+	@Autowired
+	PromoCodeRepo promoCodeRepo;
 
 	public String Status = "";
 
@@ -55,20 +59,25 @@ public class OrderService {
 		return orders;
 	}
 
+	@Transactional
 	public Response placeOrder(String username, OrderRequest orderRequest) {
 
 		Optional<Customer> c = cRepo.findById(username);
 		Optional<CustomerLogin> cLogin = cLoginRepo.findById(username);
 		Optional<Product> findProduct = productRepo.findById(orderRequest.getProductId());
 		Optional<Wallet> walletById = walletRepo.findById(username);
+		List<Orders> ordersByUsername = oRepo.findByUsername(username);
 
+		Optional<PromoCode> promo = Optional.empty();
+		if(orderRequest.getPromoCode() != null)
+			promo = promoCodeRepo.findById(orderRequest.getPromoCode());
 
 		Orders order = new Orders();
 
 		if(!c.isPresent()|| !cLogin.isPresent())
 			throw new ResourceException("No Login Found");
 
-		Response resp;
+		Response resp = null;
 
 		if(!findProduct.isPresent())
 			throw new ResourceException(String.format("No Product Found With Product Id - %s",orderRequest.getProductId()));
@@ -99,39 +108,82 @@ public class OrderService {
 
 					else{
 
-						int totalPrice = findProduct.get().getPrice() * orderRequest.getQuantity();
+						if(ordersByUsername.size() > 0)
+							if (orderRequest.getPromoCode() != null && orderRequest.getPromoCode().contentEquals("FIRSTBUY"))
+								throw new ResourceException("This Promo Code Is Valid On First Orders!!!");
+							
+						else{
 
-						if(walletById.get().getBalance() < totalPrice)
-							throw new ResourceException("Insufficient Balance!!!");
+							int totalPrice = findProduct.get().getPrice() * orderRequest.getQuantity();
 
-						Wallet w = new Wallet();
+							if(promo.isPresent())
+								if(promo.get().getStatus().booleanValue() == false)
+									throw new ResourceException("Promo Code Is Not Active!!!");
 
-						w.setWalletId(username);
-						w.setBalance(walletById.get().getBalance() - totalPrice);
-						w.setStatus(walletById.get().getStatus());
+							if(promo.isPresent())
+								if(totalPrice <= promo.get().getAmount())
+									throw new ResourceException("Total Amount Must Be Greater Than Promo Code Amount!!!");
 
-						cLogin.get().setWallet(w);
+							if(findProduct.get().getOffer() != null){
 
-						cLoginRepo.save(cLogin.get());
+								int offerMoney = ((totalPrice * findProduct.get().getOffer().getPercentage()) / 100);
+								totalPrice = totalPrice - offerMoney;
+							}
 
-						findProduct.get().setQuantityInStore(findProduct.get().getQuantityInStore() - orderRequest.getQuantity());
-						productRepo.save(findProduct.get());
+							int promoAmount = 0;
+							if(promo.isPresent())
+								promoAmount = promo.get().getAmount();
 
-						order.setUsername(username);
-						order.setProduct(findProduct.get().getProductName());
-						order.setQuantity(orderRequest.getQuantity());
-						order.setTotalPrice(totalPrice);
-						order.setDateOfPurchase(Utils.getCurrentTimeStamp());
-						order.setTransactionId(order.getTransactionId());
+							totalPrice = totalPrice - promoAmount;
 
-						oRepo.save(order);
+							if(walletById.get().getBalance() < totalPrice)
+								throw new ResourceException("Insufficient Balance!!!");
 
-						resp = Response.buildResponse("Order Placed Successfully!!!");
+							Wallet w = new Wallet();
+
+							w.setWalletId(username);
+							w.setBalance(walletById.get().getBalance() - totalPrice);
+							w.setStatus(walletById.get().getStatus());
+
+							cLogin.get().setWallet(w);
+
+							cLoginRepo.save(cLogin.get());
+
+							findProduct.get().setQuantityInStore(findProduct.get().getQuantityInStore() - orderRequest.getQuantity());
+							productRepo.save(findProduct.get());
+
+							order.setUsername(username);
+							order.setProduct(findProduct.get().getProductName());
+							order.setQuantity(orderRequest.getQuantity());
+							order.setTotalPrice(totalPrice);
+							order.setDateOfPurchase(Utils.getCurrentTimeStamp());
+							order.setTransactionId(order.getTransactionId());
+
+							String offerApplied = null;
+
+							if(findProduct.get().getOffer() != null)
+								offerApplied = findProduct.get().getOffer().getOfferId();
+							if(promo.isPresent())
+								offerApplied = offerApplied + "," + promo.get().getCode();
+
+							if(offerApplied != null)
+								order.setOffersApplied(offerApplied);
+
+							Orders savedOrder = oRepo.save(order);
+
+							resp = Response.buildResponse("Order Placed Successfully!!!",savedOrder);
+						}
 					}
 				}
 			}
 		}
 
 		return resp;
+	}
+
+	public Optional<Orders> getOrderByTransactionId(String transactionId) {
+
+		return oRepo.findById(transactionId);
+
 	}
 }

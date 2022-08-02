@@ -64,8 +64,26 @@ public class OrdersController {
 		Response orderStatus = orderService.placeOrder(username, orderRequest);
 
 		EntityModel<Response> model = EntityModel.of(orderStatus);
+
+		Orders orderDetails = (Orders) orderStatus.getEntity();
+
+		WebMvcLinkBuilder linkToInitiateRefund = linkTo(methodOn(RefundController.class).initiateRefund(orderDetails.getTransactionId()));
+		model.add(linkToInitiateRefund.withRel("initiate-refund"));
+
 		WebMvcLinkBuilder linkTo = linkTo(methodOn(this.getClass()).getAllOrderDetails(username));
 		model.add(linkTo.withRel("all-orders"));
+
+		return model;
+	}
+
+	@GetMapping("/GetOrderByTransactionId/{transactionId}")
+	public EntityModel<Orders> getOrderByTransactionId(@PathVariable String transactionId){
+
+		Orders order = orderService.getOrderByTransactionId(transactionId).get();
+
+		EntityModel<Orders> model = EntityModel.of(order);
+		WebMvcLinkBuilder linkTo = linkTo(methodOn(RefundController.class).initiateRefund(order.getTransactionId()));
+		model.add(linkTo.withRel("initiate-refund"));
 
 		return model;
 	}

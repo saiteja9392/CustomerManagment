@@ -1,15 +1,16 @@
 package com.demo.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class OrderRequest {
+@NoArgsConstructor
+@Builder
+public class OfferRequest {
 
+    private String offerId;
     private String productId;
-    private Integer quantity;
-    private String promoCode;
 }

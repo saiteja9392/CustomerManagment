@@ -4,10 +4,7 @@ import lombok.*;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Data
 @NoArgsConstructor
@@ -35,4 +32,8 @@ public class Product {
     @CreatedBy
     @Column(name = "createdby")
     private String createdBy;
+
+    @OneToOne
+    @JoinColumn(name = "offerkey")
+    private Offer offer;
 }

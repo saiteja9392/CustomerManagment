@@ -40,6 +40,9 @@ public class Orders {
 	@Column(name = "totalprice")
 	private int totalPrice;
 
+	@Column(name = "offersapplied")
+	private String offersApplied;
+
 	public void setTransactionId(String transactionId) {
 
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");

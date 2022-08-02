@@ -78,7 +78,7 @@ public class WalletService {
 
         walletRepo.delete(walletById.get());
 
-        return Response.buildResponse("Wallet Has Been Deleted");
+        return Response.buildResponse("Wallet Has Been Deleted",null);
     }
 
     public Response disableWallet(String walletId) {
@@ -95,7 +95,7 @@ public class WalletService {
 
         walletRepo.save(walletById.get());
 
-        return Response.buildResponse("Wallet Has Been Disabled");
+        return Response.buildResponse("Wallet Has Been Disabled",null);
 
     }
 
@@ -113,7 +113,17 @@ public class WalletService {
 
         walletRepo.save(walletById.get());
 
-        return Response.buildResponse("Wallet Has Been Enabled");
+        return Response.buildResponse("Wallet Has Been Enabled",null);
 
+    }
+
+    public Wallet checkBalance(String walletId) {
+
+        Optional<Wallet> walletById = walletRepo.findById(walletId);
+
+        if(!walletById.isPresent())
+            throw new ResourceException("Wallet Not Found!!!");
+
+        return walletById.get();
     }
 }

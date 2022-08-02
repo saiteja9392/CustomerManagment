@@ -15,12 +15,14 @@ public class Response {
 
     private String message;
     private Date date;
+    private Object entity;
 
-    public static Response buildResponse(String message){
+    public static Response buildResponse(String message,Object entity){
 
         Response r = new Response();
         r.setMessage(message);
         r.setDate(new Date());
+        r.setEntity(entity);
 
         return r;
     }

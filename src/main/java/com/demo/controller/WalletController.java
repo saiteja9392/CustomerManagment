@@ -5,9 +5,14 @@ import com.demo.entity.Wallet;
 import com.demo.response.Response;
 import com.demo.service.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/Wallet")
@@ -26,6 +31,24 @@ public class WalletController {
     public ResponseEntity<Wallet> addMoneyToWallet(@RequestParam String walletId, @RequestParam Integer addMoney){
 
         return new ResponseEntity<>(walletService.addMoneyToWallet(walletId, addMoney), HttpStatus.OK);
+    }
+
+    @GetMapping("/CheckBalance/{walletId}")
+    public Object checkBalance(@PathVariable String walletId){
+
+        Wallet walletDetails = walletService.checkBalance(walletId);
+
+        EntityModel<Wallet> model = EntityModel.of(walletDetails);
+
+        if(walletDetails.getBalance() == 0){
+
+            WebMvcLinkBuilder linkToAddMoney = linkTo(methodOn(this.getClass()).addMoneyToWallet(walletId,100));
+            model.add(linkToAddMoney.withRel("add-money"));
+
+            return model;
+        }
+        else
+            return walletDetails;
     }
 
     @DeleteMapping("/DeleteWallet/{walletId}")
