@@ -42,10 +42,11 @@ public class CustomerController {
 	public EntityModel<Customer> getCustomer(@PathVariable("id") String username) {
 		
 		Customer customer = customerService.getCustomer(username);
-		
+
 		EntityModel<Customer> model = EntityModel.of(customer);
-		WebMvcLinkBuilder linkTo = linkTo(methodOn(this.getClass()).listAllCustomers());
-		model.add(linkTo.withRel("all-customers"));
+
+		WebMvcLinkBuilder linkToCustomerLoginDetails = linkTo(methodOn(CustomerLoginController.class).getCustomerLogin(username));
+		model.add(linkToCustomerLoginDetails.withRel("customer-login-details"));
 		
 		return model;
 	}

@@ -10,6 +10,8 @@ import com.demo.response.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -78,5 +80,28 @@ public class OfferService {
 
         return Response.buildResponse("Offer Has Been Removed For Product",savedProduct);
 
+    }
+
+    @Transactional
+    public Response deleteOffer(String offerId) {
+
+        Optional<Offer> offerById = offerRepo.findById(offerId);
+
+        if(!offerById.isPresent())
+            throw new ResourceException("Offer Not Found");
+
+        List<Product> productsByOffer = productRepo.findByOffer(offerId);
+
+        productsByOffer.forEach(product -> {
+
+            product.setOffer(null);
+            productRepo.save(product);
+        });
+
+        offerRepo.delete(offerById.get());
+
+        Response response = Response.buildResponse("Offer Deleted",offerById.get());
+
+        return response;
     }
 }

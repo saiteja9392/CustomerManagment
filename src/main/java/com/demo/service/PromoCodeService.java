@@ -7,6 +7,7 @@ import com.demo.response.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -14,6 +15,11 @@ public class PromoCodeService {
 
     @Autowired
     PromoCodeRepo promoCodeRepo;
+
+    public List<PromoCode> getAllPromoCodes() {
+
+        return promoCodeRepo.findAll();
+    }
 
     public PromoCode addPromoCode(PromoCode promoCode) {
 
@@ -48,5 +54,17 @@ public class PromoCodeService {
         promoById.get().setStatus(false);
 
         return Response.buildResponse("Promo Code Has Been Disabled",promoCodeRepo.save(promoById.get()));
+    }
+
+    public Response deletePromoCode(String code) {
+
+        Optional<PromoCode> promoById = promoCodeRepo.findById(code);
+
+        if(!promoById.isPresent())
+            throw new ResourceException("Promo Code Does Not Exists");
+
+        promoCodeRepo.delete(promoById.get());
+
+        return Response.buildResponse("Promo Code Has Been Deleted",promoById.get());
     }
 }

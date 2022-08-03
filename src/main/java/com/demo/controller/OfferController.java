@@ -33,4 +33,10 @@ public class OfferController {
 
         return new ResponseEntity<>(offerService.removeOfferForProduct(productId),HttpStatus.OK);
     }
+
+    @DeleteMapping("/DeleteOffer/{offerId}")
+    public ResponseEntity<Response> deleteOffer(@PathVariable String offerId){
+
+        return new ResponseEntity<>(offerService.deleteOffer(offerId),HttpStatus.OK);
+    }
 }

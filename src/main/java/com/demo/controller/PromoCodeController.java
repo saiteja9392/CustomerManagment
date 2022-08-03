@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/PromoCode")
 public class PromoCodeController {
@@ -21,6 +23,12 @@ public class PromoCodeController {
         return new ResponseEntity<>(promoCodeService.addPromoCode(promoCode), HttpStatus.CREATED);
     }
 
+    @GetMapping("/AllPromoCodes")
+    public List<PromoCode> getAllPromoCodes(){
+
+        return promoCodeService.getAllPromoCodes();
+    }
+
     @PutMapping("/EnablePromoCode/{code}")
     public ResponseEntity<Response> enablePromoCode(@PathVariable String code){
 
@@ -31,5 +39,11 @@ public class PromoCodeController {
     public ResponseEntity<Response> disablePromoCode(@PathVariable String code){
 
         return new ResponseEntity<>(promoCodeService.disablePromoCode(code), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/DeletePromoCode/{code}")
+    public ResponseEntity<Response> deletePromoCode(@PathVariable String code){
+
+        return new ResponseEntity<>(promoCodeService.deletePromoCode(code), HttpStatus.OK);
     }
 }
