@@ -1,6 +1,7 @@
 package com.demo.controller;
 
 import com.demo.entity.Customer;
+import com.demo.response.Response;
 import com.demo.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -53,21 +54,21 @@ public class CustomerController {
 	
 	@PostMapping("/AddCustomer")
 	@PreAuthorize(value = "hasRole('CUSTOMER')")
-	public ResponseEntity<Customer> addCustomer(@Valid @RequestBody Customer customer) {
+	public ResponseEntity<Response> addCustomer(@Valid @RequestBody Customer customer) {
 		
-		return customerService.addCustomer(customer);
+		return new ResponseEntity<>(customerService.addCustomer(customer),HttpStatus.CREATED);
 	}
 	
 	@PutMapping("/UpdateCustomer")
-	public ResponseEntity<Customer> updateCustomerDetails(@RequestBody Customer customer) {
+	public ResponseEntity<Response> updateCustomerDetails(@RequestBody Customer customer) {
 
-		return customerService.updateCustomerDetails(customer);
+		return new ResponseEntity<>(customerService.updateCustomerDetails(customer),HttpStatus.OK);
 	}
 	
 	@DeleteMapping("/DeleteCustomer")
-	public String deleteCustomer(@RequestParam String adminUser, @RequestParam String deleteCustomer) {
+	public ResponseEntity<Response> deleteCustomer(@RequestParam String adminUser, @RequestParam String deleteCustomer) {
 
-		return customerService.deleteCustomer(adminUser, deleteCustomer);
+		return new ResponseEntity<>(customerService.deleteCustomer(adminUser,deleteCustomer),HttpStatus.OK);
 	}
 	
 	@GetMapping("/Int")

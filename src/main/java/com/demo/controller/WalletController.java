@@ -35,11 +35,13 @@ public class WalletController {
     @GetMapping("/CheckBalance/{walletId}")
     public Object checkBalance(@PathVariable String walletId){
 
-        Wallet walletDetails = walletService.checkBalance(walletId);
+        Response walletDetails = walletService.checkBalance(walletId);
 
-        EntityModel<Wallet> model = EntityModel.of(walletDetails);
+        EntityModel<Response> model = EntityModel.of(walletDetails);
 
-        if(walletDetails.getBalance() == 0){
+        Wallet wallet = (Wallet) walletDetails.getEntity();
+
+        if(wallet.getBalance() == 0){
 
             WebMvcLinkBuilder linkToAddMoney = linkTo(methodOn(this.getClass()).addMoneyToWallet(walletId,100));
             model.add(linkToAddMoney.withRel("add-money"));

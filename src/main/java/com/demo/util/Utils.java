@@ -7,7 +7,7 @@ public class Utils {
 
 	public static String getCurrentTimeStamp() {
 		
-		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		LocalDateTime now = LocalDateTime.now();
 		
 		return dtf.format(now);
@@ -15,7 +15,7 @@ public class Utils {
 	
 	public static String getOrderDate() {
 		
-		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		LocalDateTime now = LocalDateTime.now();
 		
 		return dtf.format(now);

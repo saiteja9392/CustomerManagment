@@ -115,13 +115,13 @@ public class WalletService {
 
     }
 
-    public Wallet checkBalance(String walletId) {
+    public Response checkBalance(String walletId) {
 
         Optional<Wallet> walletById = walletRepo.findById(walletId);
 
         if(!walletById.isPresent())
             throw new ResourceException("Wallet Not Found!!!");
 
-        return walletById.get();
+        return Response.buildResponse("Balance Details",walletById.get());
     }
 }

@@ -8,9 +8,7 @@ import com.demo.util.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class RefundService {
@@ -77,6 +75,8 @@ public class RefundService {
             throw new ResourceException("Customer Details Not Found!!!");
 
         List<Refund> refundDetails = refundRepo.findByLoginId(customerId);
+
+        Collections.sort(refundDetails, Comparator.comparing(Refund::getDate).reversed());
 
         return refundDetails;
     }

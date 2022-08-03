@@ -53,6 +53,7 @@ public class Init {
                 .lastname("admin")
                 .age(0)
                 .gender("O")
+                .emailId("admin@gmail.com")
                 .createdDate(new Date())
                 .modifiedDate(null)
                 .createdBy("system")

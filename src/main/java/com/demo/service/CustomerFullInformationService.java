@@ -48,6 +48,7 @@ public class CustomerFullInformationService {
         fullInformation.setLastName(customerInfo.get().getLastname());
         fullInformation.setAge(customerInfo.get().getAge());
         fullInformation.setGender(customerInfo.get().getGender());
+        fullInformation.setEmailAddress(customerInfo.get().getEmailId());
 
         LoginDetails loginDetails = new LoginDetails();
 

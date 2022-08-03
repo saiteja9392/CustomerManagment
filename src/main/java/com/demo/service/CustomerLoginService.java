@@ -6,10 +6,9 @@ import com.demo.exception.custom.InValidRequestException;
 import com.demo.exception.custom.ResourceException;
 import com.demo.repository.CustomerLoginRepo;
 import com.demo.repository.CustomerRepo;
+import com.demo.response.Response;
 import com.demo.util.AES;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -24,8 +23,6 @@ public class CustomerLoginService {
 
     @Autowired
     CustomerLoginRepo loginRepo;
-
-    public String Status = "";
 
     public List<CustomerLogin> listAllCustomerLogins(){
 
@@ -43,11 +40,13 @@ public class CustomerLoginService {
         return customerLogin.get();
     }
 
-    public ResponseEntity<CustomerLogin> createCustomerLogin(CustomerLogin customerLogin){
+    public Response createCustomerLogin(CustomerLogin customerLogin){
 
         CustomerLogin savedCustomerLogin = null;
         
         Optional<Customer> c = repo.findById(customerLogin.getLoginid());
+
+        Response response = null;
 
         if(!c.isPresent()) {
 
@@ -67,6 +66,8 @@ public class CustomerLoginService {
                 cLogin.setAdmin(customerLogin.isAdmin());
 
                 savedCustomerLogin = loginRepo.save(cLogin);
+
+                response = Response.buildResponse("Customer Login Added",savedCustomerLogin);
             }
 
             else if (customerLogin.getLoginid().contentEquals(user.get().getLoginid())) {
@@ -75,18 +76,20 @@ public class CustomerLoginService {
             }
         }
 
-        return new ResponseEntity<>(savedCustomerLogin, HttpStatus.CREATED);
+        return response;
     }
 
-    public String login(String username, String password){
+    public Response login(String username, String password){
 
         Optional<CustomerLogin> user = loginRepo.findById(username);
+
+        Response response = null;
 
         if (user.isPresent()) {
 
             if (password.contentEquals(AES.decrypt(user.get().getPassword()))) {
 
-                Status = "Login Success";
+                response = Response.buildResponse("Login Success",null);
 
                 user.get().setLastlogin(new Date());
 
@@ -101,13 +104,15 @@ public class CustomerLoginService {
             throw new InValidRequestException("Customer Login Not Found");
         }
 
-        return Status;
+        return response;
     }
 
-    public String decryptedPassword(String adminUser, String username) {
+    public Response decryptedPassword(String adminUser, String username) {
 
         Optional<Customer> customer = repo.findById(username);
         Optional<CustomerLogin> customerLogin = loginRepo.findById(username);
+
+        Response response = null;
 
         if(!customer.isPresent()) {
             throw new ResourceException("Customer Details Not Found");
@@ -126,7 +131,9 @@ public class CustomerLoginService {
 
                     String decryptedPassword = AES.decrypt(customerLogin.get().getPassword());
 
-                    Status = "DecryptedPassword for " + customerLogin.get().getLoginid() + " is " + decryptedPassword;
+                    response = Response.buildResponse(String.format("Decrypted Password for '%s' is '%s'",
+                            customerLogin.get().getLoginid(),decryptedPassword),
+                            null);
                 }
                 else {
                     throw new InValidRequestException("Customer Is Not An ADMIN User");
@@ -134,12 +141,14 @@ public class CustomerLoginService {
             }
         }
 
-        return Status;
+        return response;
     }
 
-    public String updatePassword(String username, String password) {
+    public Response updatePassword(String username, String password) {
 
         Optional<CustomerLogin> user = loginRepo.findById(username);
+
+        Response response = null;
 
         if (user.isPresent()) {
 
@@ -153,34 +162,36 @@ public class CustomerLoginService {
 
                 loginRepo.save(user.get());
 
-                Status = "Password updated Successfully";
+                response = Response.buildResponse("Password updated Successfully",null);
             }
         }
         else {
             throw new ResourceException("Customer Login Not Found");
         }
 
-        return Status;
+        return response;
     }
 
-    public ResponseEntity<CustomerLogin> updateCustomerLogin(CustomerLogin customerLogin) {
+    public Response updateCustomerLogin(CustomerLogin customerLogin) {
 
         Optional<CustomerLogin> c = loginRepo.findById(customerLogin.getLoginid());
 
-        if(!c.isPresent()){
+        if (!c.isPresent()) {
             throw new ResourceException("No Customer Login Record Found");
         }
 
-        else{
-            loginRepo.save(c.get());
-        }
+        CustomerLogin updateCustomerLogin = loginRepo.save(c.get());
 
-        return new ResponseEntity<>(customerLogin, HttpStatus.CREATED);
+        Response response = Response.buildResponse("Customer Login Updated", updateCustomerLogin);
+
+        return response;
     }
 
-    public String deleteCustomerLogin(String adminUser, String deleteCustomer) {
+    public Response deleteCustomerLogin(String adminUser, String deleteCustomer) {
 
         Optional<CustomerLogin> customerLogin = loginRepo.findById(deleteCustomer);
+
+        Response response = null;
 
         if(!customerLogin.isPresent()) {
             throw new ResourceException("Customer Login Details Not Found");
@@ -192,7 +203,8 @@ public class CustomerLoginService {
 
             if(admin.isPresent() && admin.get().isAdmin()) {
                 loginRepo.delete(customerLogin.get());
-                Status = "Customer Login Record Deleted";
+
+                response = Response.buildResponse("Customer Login Record Deleted",customerLogin);
             }
             else if(!admin.isPresent()) {
                 throw new InValidRequestException("Admin Details Not Found");
@@ -201,6 +213,6 @@ public class CustomerLoginService {
                 throw new ResourceException("Customer Login Not ADMIN User");
         }
 
-        return Status;
+        return response;
     }
 }

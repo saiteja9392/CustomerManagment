@@ -6,11 +6,10 @@ import com.demo.exception.custom.InValidRequestException;
 import com.demo.exception.custom.ResourceException;
 import com.demo.repository.CustomerLoginRepo;
 import com.demo.repository.CustomerRepo;
+import com.demo.response.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,8 +18,6 @@ import java.util.Optional;
 @Service
 @Scope(value = BeanDefinition.SCOPE_PROTOTYPE)
 public class CustomerService {
-	
-	public String Status = "";
 	
 	@Autowired
 	CustomerRepo repo;
@@ -44,7 +41,7 @@ public class CustomerService {
 		return customer.get();
 	}
 	
-	public ResponseEntity<Customer> addCustomer(Customer customer) {
+	public Response addCustomer(Customer customer) {
 
 		Optional<Customer> findCustomer = repo.findById(customer.getId());
 
@@ -56,10 +53,12 @@ public class CustomerService {
 			throw new ResourceException("Customer id already in Use");
 		}
 
-		return new ResponseEntity<Customer>(savedCustomer, HttpStatus.CREATED);
+		Response response = Response.buildResponse("Customer Added",savedCustomer);
+
+		return response;
 	}
 
-	public ResponseEntity<Customer> updateCustomerDetails(Customer customer) {
+	public Response updateCustomerDetails(Customer customer) {
 		
 		Optional<Customer> c = repo.findById(customer.getId());
 
@@ -72,15 +71,18 @@ public class CustomerService {
 		else{
 			updatedCustomer = repo.save(customer);
 		}
-	
-		return new ResponseEntity<Customer>(updatedCustomer, HttpStatus.CREATED);
+
+		Response response = Response.buildResponse("Customer Details Updated",updatedCustomer);
+
+		return response;
 	}
 	
-	public String deleteCustomer(String adminUser,String deleteCustomer) {
+	public Response deleteCustomer(String adminUser,String deleteCustomer) {
 		
 		Optional<Customer> customer = repo.findById(deleteCustomer);
 		Optional<CustomerLogin> customerLogin = loginRepo.findById(deleteCustomer);
-		
+
+		Response response;
 		if(!customer.isPresent()) {
 			throw new ResourceException("Customer Details not Found");
 		}
@@ -97,7 +99,7 @@ public class CustomerService {
 					loginRepo.delete(customerLogin.get());
 				}
 
-				Status = "Customer details deleted Successfully";
+				response = Response.buildResponse("Customer details deleted Successfully",customer);
 			}
 			
 			else if(!isAdminUser.isPresent()) {
@@ -109,7 +111,7 @@ public class CustomerService {
 			}
 		}
 		
-		return Status;
+		return response;
 	}
 	
 }

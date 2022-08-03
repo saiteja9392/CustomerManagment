@@ -1,6 +1,7 @@
 package com.demo.controller;
 
 import com.demo.entity.CustomerLogin;
+import com.demo.response.Response;
 import com.demo.service.CustomerLoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,38 +31,38 @@ public class CustomerLoginController {
     }
 
     @PostMapping("/AddCustomerLogin")
-    public ResponseEntity<CustomerLogin> createCustomerLogin(@RequestBody CustomerLogin customerLogin){
+    public ResponseEntity<Response> createCustomerLogin(@RequestBody CustomerLogin customerLogin){
 
-        return customerLoginService.createCustomerLogin(customerLogin);
+        return new ResponseEntity<>(customerLoginService.createCustomerLogin(customerLogin),HttpStatus.CREATED);
     }
 
     @PutMapping("/UpdateCustomerLogin")
-    public ResponseEntity<CustomerLogin> updateCustomerDetails(@RequestBody CustomerLogin customerLogin) {
+    public ResponseEntity<Response> updateCustomerDetails(@RequestBody CustomerLogin customerLogin) {
 
-        return customerLoginService.updateCustomerLogin(customerLogin);
+        return new ResponseEntity<>(customerLoginService.updateCustomerLogin(customerLogin),HttpStatus.OK);
     }
 
     @DeleteMapping("/DeleteCustomerLogin")
-    public String deleteCustomer(@RequestParam String adminUser, @RequestParam String deleteCustomer) {
+    public ResponseEntity<Response> deleteCustomer(@RequestParam String adminUser, @RequestParam String deleteCustomer) {
 
-        return customerLoginService.deleteCustomerLogin(adminUser, deleteCustomer);
+        return new ResponseEntity<>(customerLoginService.deleteCustomerLogin(adminUser, deleteCustomer),HttpStatus.OK);
     }
 
     @PostMapping("/Login")
-    public String login(@RequestParam("loginId") String id, @RequestParam("password") String pass){
+    public ResponseEntity<Response> login(@RequestParam("loginId") String id, @RequestParam("password") String pass){
 
-        return customerLoginService.login(id,pass);
+        return new ResponseEntity<>(customerLoginService.login(id,pass),HttpStatus.OK);
     }
 
     @GetMapping("/Decrypt")
-    public String decryptedPassword(@RequestParam String adminUser, @RequestParam String username) {
+    public ResponseEntity<Response> decryptedPassword(@RequestParam String adminUser, @RequestParam String username) {
 
-        return customerLoginService.decryptedPassword(adminUser,username);
+        return new ResponseEntity<>(customerLoginService.decryptedPassword(adminUser,username),HttpStatus.OK);
     }
 
     @PutMapping("/UpdatePassword")
-    public String updatePassword(@RequestParam String username, @RequestParam String password) {
+    public ResponseEntity<Response> updatePassword(@RequestParam String username, @RequestParam String password) {
 
-        return customerLoginService.updatePassword(username,password);
+        return new ResponseEntity<>(customerLoginService.updatePassword(username,password),HttpStatus.OK);
     }
 }

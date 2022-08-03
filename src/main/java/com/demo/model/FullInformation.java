@@ -18,6 +18,7 @@ public class FullInformation {
     private String lastName;
     private Integer age;
     private String gender;
+    private String emailAddress;
     private LoginDetails loginDetails;
     private WalletDetails walletDetails;
     private OrderDetails orderDetails;
