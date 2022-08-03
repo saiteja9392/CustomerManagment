@@ -37,11 +37,20 @@ public class Orders {
 	@NotNull
 	private Integer quantity;
 
-	@Column(name = "totalprice")
-	private int totalPrice;
+	@Column(name = "productprice",nullable = false)
+	private Integer productPrice;
+
+	@Column(name = "offeramount")
+	private Integer offerAmount;
+
+	@Column(name = "promoamount")
+	private Integer promoAmount;
 
 	@Column(name = "offersapplied")
 	private String offersApplied;
+
+	@Column(name = "finalprice",nullable = false)
+	private int finalPrice;
 
 	public void setTransactionId(String transactionId) {
 

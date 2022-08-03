@@ -46,7 +46,7 @@ public class RefundService {
         if(findWallet.isPresent() && !findWallet.get().getStatus())
             throw new ResourceException("Wallet Is Disabled !!! Cannot Initiate Refund");
 
-        int refundAmount = findTransaction.get().getTotalPrice();
+        int refundAmount = findTransaction.get().getFinalPrice();
 
         ordersRepo.deleteById(findTransaction.get().getTransactionId());
 

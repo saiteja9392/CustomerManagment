@@ -14,8 +14,10 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -59,19 +61,37 @@ public class OrdersController {
 	}
 
 	@PostMapping("/PlaceOrder")
-	public EntityModel<Response> placeOrder(@RequestParam String username, @RequestBody OrderRequest orderRequest){
+	public EntityModel<Response> placeOrder(@RequestParam String username, @Valid @RequestBody OrderRequest orderRequest) {
 
-		Response orderStatus = orderService.placeOrder(username, orderRequest);
+		EntityModel<Response> model = null;
+		Response orderStatus = null;
 
-		EntityModel<Response> model = EntityModel.of(orderStatus);
+		try {
+			orderStatus = orderService.placeOrder(username, orderRequest);
 
-		Orders orderDetails = (Orders) orderStatus.getEntity();
+			model = EntityModel.of(orderStatus);
 
-		WebMvcLinkBuilder linkToInitiateRefund = linkTo(methodOn(RefundController.class).initiateRefund(orderDetails.getTransactionId()));
-		model.add(linkToInitiateRefund.withRel("initiate-refund"));
+			Orders orderDetails = (Orders) orderStatus.getEntity();
 
-		WebMvcLinkBuilder linkTo = linkTo(methodOn(this.getClass()).getAllOrderDetails(username));
-		model.add(linkTo.withRel("all-orders"));
+			WebMvcLinkBuilder linkToInitiateRefund = linkTo(methodOn(RefundController.class).initiateRefund(orderDetails.getTransactionId()));
+			model.add(linkToInitiateRefund.withRel("initiate-refund"));
+
+			WebMvcLinkBuilder linkTo = linkTo(methodOn(this.getClass()).getAllOrderDetails(username));
+			model.add(linkTo.withRel("all-orders"));
+
+		} catch (Exception e) {
+
+			if(e.getMessage().contentEquals("Insufficient Balance!!!")){
+
+				model = EntityModel.of(Response.builder().message(e.getMessage()).date(new Date()).build());
+
+				WebMvcLinkBuilder linkToInitiateRefund = linkTo(methodOn(WalletController.class).addMoneyToWallet(username,100));
+				model.add(linkToInitiateRefund.withRel("add-money"));
+			}
+			else{
+				throw e;
+			}
+		}
 
 		return model;
 	}

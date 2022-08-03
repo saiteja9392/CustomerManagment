@@ -87,7 +87,7 @@ public class CustomerFullInformationService {
 
                 oDetails.setProductName(order.getProduct());
                 oDetails.setQuantity(order.getQuantity());
-                oDetails.setTotalAmount(order.getTotalPrice());
+                oDetails.setTotalAmount(order.getFinalPrice());
                 oDetails.setDateOfPurchase(order.getDateOfPurchase());
 
                 listOfOrderDetails.add(oDetails);
