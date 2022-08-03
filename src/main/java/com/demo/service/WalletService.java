@@ -20,7 +20,7 @@ public class WalletService {
     @Autowired
     WalletRepo walletRepo;
 
-    public CustomerLogin addWallet(Wallet wallet) {
+    public Response addWallet(Wallet wallet) {
 
         Optional<CustomerLogin> customerLoginByWallet = customerLoginRepo.findById(wallet.getWalletId());
 
@@ -37,12 +37,12 @@ public class WalletService {
 
         customerLoginByWallet.get().setWallet(wallet);
 
-        CustomerLogin customerLoginAfterWallet = customerLoginRepo.save(customerLoginByWallet.get());
+        Response response = Response.buildResponse("Wallet Added",customerLoginRepo.save(customerLoginByWallet.get()));
 
-        return customerLoginAfterWallet;
+        return response;
     }
 
-    public Wallet addMoneyToWallet(String walletId, Integer addMoney) {
+    public Response addMoneyToWallet(String walletId, Integer addMoney) {
 
         Optional<CustomerLogin> customerLoginByWallet = customerLoginRepo.findById(walletId);
 
@@ -58,7 +58,9 @@ public class WalletService {
 
         walletById.get().setBalance(balance);
 
-        return walletRepo.save(walletById.get());
+        Response response = Response.buildResponse("Money Added To Wallet",walletRepo.save(walletById.get()));
+
+        return response;
     }
 
     public Response deleteWallet(String walletId) {
@@ -93,9 +95,7 @@ public class WalletService {
 
         walletById.get().setStatus(false);
 
-        walletRepo.save(walletById.get());
-
-        return Response.buildResponse("Wallet Has Been Disabled",null);
+        return Response.buildResponse("Wallet Has Been Disabled",walletRepo.save(walletById.get()));
 
     }
 
@@ -111,9 +111,7 @@ public class WalletService {
 
         walletById.get().setStatus(true);
 
-        walletRepo.save(walletById.get());
-
-        return Response.buildResponse("Wallet Has Been Enabled",null);
+        return Response.buildResponse("Wallet Has Been Enabled",walletRepo.save(walletById.get()));
 
     }
 

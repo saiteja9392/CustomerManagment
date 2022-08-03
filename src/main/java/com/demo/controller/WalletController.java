@@ -1,6 +1,5 @@
 package com.demo.controller;
 
-import com.demo.entity.CustomerLogin;
 import com.demo.entity.Wallet;
 import com.demo.response.Response;
 import com.demo.service.WalletService;
@@ -22,13 +21,13 @@ public class WalletController {
     WalletService walletService;
 
     @PostMapping("/AddWallet")
-    public ResponseEntity<CustomerLogin> addWallet(@RequestBody Wallet wallet){
+    public ResponseEntity<Response> addWallet(@RequestBody Wallet wallet){
 
         return new ResponseEntity<>(walletService.addWallet(wallet), HttpStatus.CREATED);
     }
 
     @PostMapping("/AddMoneyToWallet")
-    public ResponseEntity<Wallet> addMoneyToWallet(@RequestParam String walletId, @RequestParam Integer addMoney){
+    public ResponseEntity<Response> addMoneyToWallet(@RequestParam String walletId, @RequestParam Integer addMoney){
 
         return new ResponseEntity<>(walletService.addMoneyToWallet(walletId, addMoney), HttpStatus.OK);
     }

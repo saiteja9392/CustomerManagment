@@ -38,7 +38,7 @@ public class OrderService {
 
 	public String Status = "";
 
-	public List<Orders> getAllOrderDetails(String username) {
+	public List<Orders> getCustomerOrderDetails(String username) {
 		
 		System.out.println(ordersRepo.count());
 
@@ -109,7 +109,7 @@ public class OrderService {
 
 		if(ordersByUsername.size() > 0) {
 			if (orderRequest.getPromoCode() != null && orderRequest.getPromoCode().toUpperCase().contentEquals("FIRSTBUY"))
-				throw new ResourceException("This Promo Code Is Valid On First Order!!!");
+				throw new ResourceException(String.format("'%s' Promo Code Is Valid On First Order!!!",orderRequest.getPromoCode().toUpperCase()));
 
 			else {
 				resp = this.orderProduct(findProduct,promo,walletById,orderRequest,username);
@@ -122,6 +122,7 @@ public class OrderService {
 		return resp;
 	}
 
+	@Transactional
 	private Response orderProduct(Optional<Product> findProduct, Optional<PromoCode> promo, Optional<Wallet> walletById,
 								  OrderRequest orderRequest, String username) {
 
@@ -174,13 +175,13 @@ public class OrderService {
 		String offerApplied = null;
 
 		if (findProduct.get().getOffer() != null)
-			offerApplied = findProduct.get().getOffer().getOfferId();
+			offerApplied = findProduct.get().getOffer().getOfferId().toUpperCase();
 
 		if (promo.isPresent()) {
 			if (offerApplied == null)
-				offerApplied = promo.get().getCode();
+				offerApplied = promo.get().getCode().toUpperCase();
 			else
-				offerApplied = offerApplied + "," + promo.get().getCode();
+				offerApplied = offerApplied + "," + promo.get().getCode().toUpperCase();
 		}
 
 		if (offerApplied != null)

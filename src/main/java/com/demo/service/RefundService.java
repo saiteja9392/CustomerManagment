@@ -3,6 +3,7 @@ package com.demo.service;
 import com.demo.entity.*;
 import com.demo.exception.custom.ResourceException;
 import com.demo.repository.*;
+import com.demo.response.Response;
 import com.demo.util.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,7 @@ public class RefundService {
 
     private String Status;
 
-    public String initiateRefund(String transactionId) {
+    public Response initiateRefund(String transactionId) {
 
         Optional<Orders> findTransaction = ordersRepo.findById(transactionId);
 
@@ -62,11 +63,9 @@ public class RefundService {
         refund.setDate(new Date());
         refund.setLoginId(findTransaction.get().getUsername());
 
-        refundRepo.save(refund);
+        Response response = Response.buildResponse("Refund Successful",refundRepo.save(refund));
 
-        Status = "Refund Successful";
-
-        return Status;
+        return response;
     }
 
     public List<Refund> getRefundDetailsOfCustomer(String customerId) {

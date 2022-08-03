@@ -1,6 +1,7 @@
 package com.demo.controller;
 
 import com.demo.entity.Refund;
+import com.demo.response.Response;
 import com.demo.service.RefundService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,7 +18,7 @@ public class RefundController {
     RefundService refundService;
 
     @PostMapping("/InitiateRefund/{transactionId}")
-    public ResponseEntity<String> initiateRefund(@PathVariable String transactionId){
+    public ResponseEntity<Response> initiateRefund(@PathVariable String transactionId){
 
         return new ResponseEntity<>(refundService.initiateRefund(transactionId), HttpStatus.OK);
     }

@@ -40,11 +40,11 @@ public class OrdersController {
 	String applicationName;
 	
 	@GetMapping("/GetOrders/{id}")
-	public List<CollectionModel> getAllOrderDetails(@PathVariable("id") String username) {
+	public List<CollectionModel> getCustomerOrderDetails(@PathVariable("id") String username) {
 		
 		log.debug(customerService);
 
-		List<Orders> orderDetails = orderService.getAllOrderDetails(username);
+		List<Orders> orderDetails = orderService.getCustomerOrderDetails(username);
 
 		List<CollectionModel> models = new ArrayList<>();
 
@@ -76,7 +76,7 @@ public class OrdersController {
 			WebMvcLinkBuilder linkToInitiateRefund = linkTo(methodOn(RefundController.class).initiateRefund(orderDetails.getTransactionId()));
 			model.add(linkToInitiateRefund.withRel("initiate-refund"));
 
-			WebMvcLinkBuilder linkTo = linkTo(methodOn(this.getClass()).getAllOrderDetails(username));
+			WebMvcLinkBuilder linkTo = linkTo(methodOn(this.getClass()).getCustomerOrderDetails(username));
 			model.add(linkTo.withRel("all-orders"));
 
 		} catch (Exception e) {
