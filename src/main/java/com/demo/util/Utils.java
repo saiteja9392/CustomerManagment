@@ -21,10 +21,11 @@ public class Utils {
 		return dtf.format(now);
 	}
 
-	public static String getRefundTransactionId(){
+	public static String getBalanceTransactionId() {
 
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 		LocalDateTime now = LocalDateTime.now();
-		return "REF"+dtf.format(now);
+
+		return "B"+dtf.format(now);
 	}
 }

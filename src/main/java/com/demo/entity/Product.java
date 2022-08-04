@@ -12,6 +12,7 @@ import javax.persistence.*;
 @Builder
 @ToString
 @Entity
+@Table(name = "products")
 @EntityListeners(AuditingEntityListener.class)
 public class Product {
 

@@ -4,6 +4,7 @@ import com.demo.entity.Product;
 import com.demo.exception.custom.ResourceException;
 import com.demo.model.ProductDetails;
 import com.demo.repository.ProductRepo;
+import com.demo.response.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +19,7 @@ public class ProductService {
 
     private String Status = "";
 
-    public Product addProduct(Product newProduct) {
+    public Response addProduct(Product newProduct) {
 
         Optional<Product> product = productRepo.findById(newProduct.getProductId());
 
@@ -27,10 +28,10 @@ public class ProductService {
             throw new ResourceException("Product Id already exists");
         }
 
-        return productRepo.save(newProduct);
+        return Response.buildResponse("Product Added",productRepo.save(newProduct));
     }
 
-    public Product updateProductInformation(String productId, Product updatedProduct) {
+    public Response updateProductInformation(String productId, Product updatedProduct) {
 
         Optional<Product> product = productRepo.findById(productId);
 
@@ -43,10 +44,10 @@ public class ProductService {
         product.get().setPrice(updatedProduct.getPrice());
         product.get().setManufacturer(updatedProduct.getManufacturer());
 
-        return productRepo.save(product.get());
+        return Response.buildResponse("Product Information Updated",productRepo.save(product.get()));
     }
 
-    public String addStockToStore(String productId, Integer quantity) {
+    public Response addStockToStore(String productId, Integer quantity) {
 
         Optional<Product> product = productRepo.findById(productId);
 
@@ -61,10 +62,7 @@ public class ProductService {
 
         Product updatedProductDetails = productRepo.save(product.get());
 
-        Status = String.format("New Stock Added, Total Quantity of %s In Store %s",
-                                product.get().getProductName(),updatedProductDetails.getQuantityInStore());
-
-        return Status;
+        return Response.buildResponse("New Stock Added",updatedProductDetails);
     }
 
     public List<ProductDetails> currentProductsInStore() {
@@ -118,7 +116,7 @@ public class ProductService {
         return productDetails;
     }
 
-    public String deleteProductInformation(String productId) {
+    public Response deleteProductInformation(String productId) {
 
         Optional<Product> product = productRepo.findById(productId);
 
@@ -131,7 +129,7 @@ public class ProductService {
 
         Status = String.format("Product '%s' Has Been Deleted Successfully",product.get().getProductName());
 
-        return Status;
+        return Response.buildResponse(Status,product.get());
     }
 
     public List<ProductDetails> filterBasedOnQuantity(Integer quantity) {

@@ -1,6 +1,9 @@
 package com.demo.service;
 
-import com.demo.entity.*;
+import com.demo.entity.Customer;
+import com.demo.entity.CustomerLogin;
+import com.demo.entity.Order;
+import com.demo.entity.Wallet;
 import com.demo.exception.custom.ResourceException;
 import com.demo.model.*;
 import com.demo.repository.*;
@@ -26,7 +29,7 @@ public class CustomerFullInformationService {
     WalletRepo walletRepo;
 
     @Autowired
-    OrdersRepo ordersRepo;
+    OrderRepo orderRepo;
 
     @Autowired
     RefundRepo refundRepo;
@@ -36,7 +39,7 @@ public class CustomerFullInformationService {
         Optional<Customer> customerInfo = customerRepo.findById(customerId);
         Optional<CustomerLogin> customerLoginInfo = customerLoginRepo.findById(customerId);
         Optional<Wallet> walletInfo = walletRepo.findById(customerId);
-        List<Orders> ordersInfo = ordersRepo.findByUsername(customerId);
+        List<Order> orderInfo = orderRepo.findByUsername(customerId);
 
         FullInformation fullInformation = new FullInformation();
 
@@ -76,13 +79,13 @@ public class CustomerFullInformationService {
 
         OrderDetails orderDetails = new OrderDetails();
 
-        orderDetails.setTotalOrders(ordersInfo.size());
+        orderDetails.setTotalOrders(orderInfo.size());
 
         List<Details> listOfOrderDetails = new LinkedList<>();
 
-        if(ordersInfo.size() != 0){
+        if(orderInfo.size() != 0){
 
-            ordersInfo.forEach(order ->{
+            orderInfo.forEach(order ->{
 
                 Details oDetails = new Details();
 
@@ -90,6 +93,9 @@ public class CustomerFullInformationService {
                 oDetails.setQuantity(order.getQuantity());
                 oDetails.setTotalAmount(order.getFinalPrice());
                 oDetails.setDateOfPurchase(order.getDateOfPurchase());
+                oDetails.setStatus(order.getStatus());
+                if(order.getRefund() != null)
+                    oDetails.setDateOfRefund(order.getRefund().getDate());
 
                 listOfOrderDetails.add(oDetails);
             });
@@ -102,31 +108,6 @@ public class CustomerFullInformationService {
         }
         else
             fullInformation.setOrderDetails(null);
-
-        List<Refund> refundDetails = refundRepo.findByLoginId(customerId);
-
-        List<RefundDetails> listOfRefundDetails = new LinkedList<>();
-
-        if(refundDetails.size() != 0){
-
-            refundDetails.forEach(r -> {
-
-                RefundDetails refund = new RefundDetails();
-
-                refund.setProductName(r.getProduct());
-                refund.setAmount(r.getAmount());
-                refund.setDate(r.getDate());
-
-                listOfRefundDetails.add(refund);
-
-            });
-
-            Collections.reverse(listOfRefundDetails);
-
-            fullInformation.setRefundDetails(listOfRefundDetails);
-        }
-        else
-            fullInformation.setRefundDetails(null);
 
         return fullInformation;
     }

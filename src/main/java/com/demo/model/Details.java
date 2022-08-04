@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,5 +16,7 @@ public class Details {
     private String productName;
     private Integer quantity;
     private int totalAmount;
-    private String dateOfPurchase;
+    private Date dateOfPurchase;
+    private String status;
+    private Date dateOfRefund;
 }

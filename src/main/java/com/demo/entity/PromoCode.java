@@ -14,7 +14,7 @@ import javax.persistence.Table;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "promocode")
+@Table(name = "promocodes")
 public class PromoCode {
 
     @Id

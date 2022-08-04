@@ -2,6 +2,7 @@ package com.demo.controller;
 
 import com.demo.entity.Product;
 import com.demo.model.ProductDetails;
+import com.demo.response.Response;
 import com.demo.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
@@ -25,25 +26,25 @@ public class ProductController {
     ProductService productService;
 
     @PostMapping("/AddProduct")
-    public ResponseEntity<Product> addProduct(@RequestBody Product newProduct){
+    public ResponseEntity<Response> addProduct(@RequestBody Product newProduct){
 
         return new ResponseEntity<>(productService.addProduct(newProduct), HttpStatus.CREATED);
     }
 
     @PutMapping("/UpdateProductInformation")
-    public ResponseEntity<Product> updateProductInformation(@RequestParam String productId, @RequestBody Product updatedProduct){
+    public ResponseEntity<Response> updateProductInformation(@RequestParam String productId, @RequestBody Product updatedProduct){
 
         return new ResponseEntity<>(productService.updateProductInformation(productId,updatedProduct), HttpStatus.OK);
     }
 
     @DeleteMapping("/DeleteProduct/{productId}")
-    public ResponseEntity<String> deleteProductInformation(@PathVariable String productId){
+    public ResponseEntity<Response> deleteProductInformation(@PathVariable String productId){
 
         return new ResponseEntity<>(productService.deleteProductInformation(productId), HttpStatus.OK);
     }
 
     @PostMapping("/AddStockToStore")
-    public ResponseEntity<String> addStockToStore(@RequestParam String productId, @RequestParam Integer quantity){
+    public ResponseEntity<Response> addStockToStore(@RequestParam String productId, @RequestParam Integer quantity){
 
         return new ResponseEntity<>(productService.addStockToStore(productId,quantity), HttpStatus.OK);
     }

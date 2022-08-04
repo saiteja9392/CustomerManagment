@@ -1,6 +1,6 @@
 package com.demo.controller;
 
-import com.demo.entity.Orders;
+import com.demo.entity.Order;
 import com.demo.model.OrderRequest;
 import com.demo.property.CustomerProperty;
 import com.demo.response.Response;
@@ -19,13 +19,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import static com.demo.enumaration.Status.DELIVERED;
+import static com.demo.enumaration.Status.REFUNDED;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @Log4j2
-public class OrdersController {
+public class OrderController {
 
 	@Autowired
 	OrderService orderService;
@@ -44,15 +47,25 @@ public class OrdersController {
 		
 		log.debug(customerService);
 
-		List<Orders> orderDetails = orderService.getCustomerOrderDetails(username);
+		List<Order> orderDetails = orderService.getCustomerOrderDetails(username);
 
 		List<CollectionModel> models = new ArrayList<>();
 
-		orderDetails.forEach(order -> {
+		List<Order> deliveredOrders = orderDetails.stream().filter( order -> order.getStatus().contentEquals(DELIVERED.name())).collect(Collectors.toList());
+		List<Order> refundedOrders = orderDetails.stream().filter( order -> order.getStatus().contentEquals(REFUNDED.name())).collect(Collectors.toList());
 
-			CollectionModel<Orders> model = CollectionModel.of(Collections.singleton(order));
+		deliveredOrders.forEach(order -> {
+
+			CollectionModel<Order> model = CollectionModel.of(Collections.singleton(order));
 			WebMvcLinkBuilder linkTo = linkTo(methodOn(RefundController.class).initiateRefund(order.getTransactionId()));
 			model.add(linkTo.withRel("initiate-refund"));
+
+			models.add(model);
+		});
+
+		refundedOrders.forEach(order -> {
+
+			CollectionModel<Order> model = CollectionModel.of(Collections.singleton(order));
 
 			models.add(model);
 		});
@@ -71,7 +84,7 @@ public class OrdersController {
 
 			model = EntityModel.of(orderStatus);
 
-			Orders orderDetails = (Orders) orderStatus.getEntity();
+			Order orderDetails = (Order) orderStatus.getEntity();
 
 			WebMvcLinkBuilder linkToInitiateRefund = linkTo(methodOn(RefundController.class).initiateRefund(orderDetails.getTransactionId()));
 			model.add(linkToInitiateRefund.withRel("initiate-refund"));
@@ -97,13 +110,21 @@ public class OrdersController {
 	}
 
 	@GetMapping("/GetOrderByTransactionId/{transactionId}")
-	public EntityModel<Orders> getOrderByTransactionId(@PathVariable String transactionId){
+	public EntityModel<Order> getOrderByTransactionId(@PathVariable String transactionId) {
 
-		Orders order = orderService.getOrderByTransactionId(transactionId).get();
+		Order order = orderService.getOrderByTransactionId(transactionId).get();
 
-		EntityModel<Orders> model = EntityModel.of(order);
-		WebMvcLinkBuilder linkTo = linkTo(methodOn(RefundController.class).initiateRefund(order.getTransactionId()));
-		model.add(linkTo.withRel("initiate-refund"));
+		EntityModel<Order> model = null;
+		if (order.getStatus().equals(DELIVERED.name())) {
+
+			model = EntityModel.of(order);
+			WebMvcLinkBuilder linkTo = linkTo(methodOn(RefundController.class).initiateRefund(order.getTransactionId()));
+			model.add(linkTo.withRel("initiate-refund"));
+		} else {
+
+			model = EntityModel.of(order);
+		}
+
 
 		return model;
 	}

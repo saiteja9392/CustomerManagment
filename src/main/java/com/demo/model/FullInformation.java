@@ -5,8 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,5 +20,4 @@ public class FullInformation {
     private LoginDetails loginDetails;
     private WalletDetails walletDetails;
     private OrderDetails orderDetails;
-    private List<RefundDetails> refundDetails;
 }

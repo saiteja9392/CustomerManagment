@@ -2,14 +2,20 @@ package com.demo.service;
 
 import com.demo.entity.CustomerLogin;
 import com.demo.entity.Wallet;
+import com.demo.entity.WalletTransaction;
 import com.demo.exception.custom.ResourceException;
 import com.demo.repository.CustomerLoginRepo;
 import com.demo.repository.WalletRepo;
+import com.demo.repository.WalletTransactionRepo;
 import com.demo.response.Response;
+import com.demo.util.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.Optional;
+
+import static com.demo.enumaration.Status.CREDITED;
 
 @Service
 public class WalletService {
@@ -19,6 +25,9 @@ public class WalletService {
 
     @Autowired
     WalletRepo walletRepo;
+
+    @Autowired
+    WalletTransactionRepo walletTransactionRepo;
 
     public Response addWallet(Wallet wallet) {
 
@@ -42,6 +51,7 @@ public class WalletService {
         return response;
     }
 
+    @Transactional
     public Response addMoneyToWallet(String walletId, Integer addMoney) {
 
         Optional<CustomerLogin> customerLoginByWallet = customerLoginRepo.findById(walletId);
@@ -58,9 +68,26 @@ public class WalletService {
 
         walletById.get().setBalance(balance);
 
-        Response response = Response.buildResponse("Money Added To Wallet",walletRepo.save(walletById.get()));
+        Wallet updatedWallet = walletRepo.save(walletById.get());
+
+        addToWalletTransaction(walletId,addMoney);
+
+        Response response = Response.buildResponse("Money Added To Wallet",updatedWallet);
 
         return response;
+    }
+
+    @Transactional
+    private WalletTransaction addToWalletTransaction(String loginId, int amount) {
+
+        WalletTransaction walletTransaction = new WalletTransaction();
+        walletTransaction.setTransactionId(walletTransaction.getTransactionId());
+        walletTransaction.setTransactionType(CREDITED.name());
+        walletTransaction.setAmount(amount);
+        walletTransaction.setLoginId(loginId);
+        walletTransaction.setReferenceId(Utils.getBalanceTransactionId());
+
+        return walletTransactionRepo.save(walletTransaction);
     }
 
     public Response deleteWallet(String walletId) {

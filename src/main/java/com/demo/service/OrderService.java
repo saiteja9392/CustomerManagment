@@ -5,15 +5,14 @@ import com.demo.exception.custom.ResourceException;
 import com.demo.model.OrderRequest;
 import com.demo.repository.*;
 import com.demo.response.Response;
-import com.demo.util.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+
+import static com.demo.enumaration.Status.DEBITED;
+import static com.demo.enumaration.Status.DELIVERED;
 
 @Service
 public class OrderService {
@@ -25,7 +24,7 @@ public class OrderService {
 	CustomerLoginRepo customerLoginRepo;
 
 	@Autowired
-	OrdersRepo ordersRepo;
+	OrderRepo orderRepo;
 
 	@Autowired
 	ProductRepo productRepo;
@@ -36,11 +35,12 @@ public class OrderService {
 	@Autowired
 	PromoCodeRepo promoCodeRepo;
 
-	public String Status = "";
+	@Autowired
+	WalletTransactionRepo walletTransactionRepo;
 
-	public List<Orders> getCustomerOrderDetails(String username) {
+	public List<Order> getCustomerOrderDetails(String username) {
 		
-		System.out.println(ordersRepo.count());
+		System.out.println(orderRepo.count());
 
 		Optional<Customer> c = customerRepo.findById(username);
 
@@ -49,9 +49,9 @@ public class OrderService {
 		if(!c.isPresent()|| !cLogin.isPresent())
 			throw new ResourceException("No Login Found");
 		
-		List<Orders> orders = ordersRepo.findByUsername(username);
+		List<Order> orders = orderRepo.findByUsername(username);
 
-		Collections.sort(orders, Comparator.comparing(Orders::getTransactionId).reversed());
+		Collections.sort(orders, Comparator.comparing(Order::getTransactionId).reversed());
 
 		if(orders == null)
 			throw new ResourceException("No Orders Found");
@@ -91,7 +91,7 @@ public class OrderService {
 		if(walletById.get().getBalance() <= 0)
 			throw new ResourceException("Insufficient Balance!!!");
 
-		List<Orders> ordersByUsername = ordersRepo.findByUsername(username);
+		List<Order> orderByUsername = orderRepo.findByUsername(username);
 		Optional<PromoCode> promo = Optional.empty();
 
 		Response resp = null;
@@ -107,7 +107,7 @@ public class OrderService {
 				throw new ResourceException("Promo Code Is Not Active!!!");
 		}
 
-		if(ordersByUsername.size() > 0) {
+		if(orderByUsername.size() > 0) {
 			if (orderRequest.getPromoCode() != null && orderRequest.getPromoCode().toUpperCase().contentEquals("FIRSTBUY"))
 				throw new ResourceException(String.format("'%s' Promo Code Is Valid On First Order!!!",orderRequest.getPromoCode().toUpperCase()));
 
@@ -160,7 +160,7 @@ public class OrderService {
 		findProduct.get().setQuantityInStore(findProduct.get().getQuantityInStore() - orderRequest.getQuantity());
 		productRepo.save(findProduct.get());
 
-		Orders order = new Orders();
+		Order order = new Order();
 
 		order.setUsername(username);
 		order.setProduct(findProduct.get().getProductName());
@@ -169,8 +169,9 @@ public class OrderService {
 		order.setOfferAmount(offerMoney);
 		order.setPromoAmount(promoAmount);
 		order.setFinalPrice(totalPrice);
-		order.setDateOfPurchase(Utils.getCurrentTimeStamp());
+		order.setDateOfPurchase(new Date());
 		order.setTransactionId(order.getTransactionId());
+		order.setStatus(DELIVERED.name());
 
 		String offerApplied = null;
 
@@ -187,16 +188,31 @@ public class OrderService {
 		if (offerApplied != null)
 			order.setOffersApplied(offerApplied);
 
-		Orders savedOrder = ordersRepo.save(order);
+		Order savedOrder = orderRepo.save(order);
+
+		addToWalletTransaction(username, totalPrice,savedOrder);
 
 		Response resp = Response.buildResponse("Order Placed Successfully!!!", savedOrder);
 
 		return resp;
 	}
 
-	public Optional<Orders> getOrderByTransactionId(String transactionId) {
+	@Transactional
+	private WalletTransaction addToWalletTransaction(String username, int totalPrice, Order order) {
 
-		return ordersRepo.findById(transactionId);
+		WalletTransaction walletTransaction = new WalletTransaction();
+		walletTransaction.setTransactionId(walletTransaction.getTransactionId());
+		walletTransaction.setTransactionType(DEBITED.name());
+		walletTransaction.setAmount(totalPrice);
+		walletTransaction.setLoginId(username);
+		walletTransaction.setReferenceId(order.getTransactionId());
+
+		return walletTransactionRepo.save(walletTransaction);
+	}
+
+	public Optional<Order> getOrderByTransactionId(String transactionId) {
+
+		return orderRepo.findById(transactionId);
 
 	}
 }

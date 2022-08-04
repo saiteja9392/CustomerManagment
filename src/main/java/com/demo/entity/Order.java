@@ -6,13 +6,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 @Data
 @AllArgsConstructor
@@ -20,7 +18,7 @@ import java.time.format.DateTimeFormatter;
 @ToString
 @Entity
 @Table(name = "orders")
-public class Orders {
+public class Order {
 
 	@Id
 	@Column(name = "transactionid")
@@ -32,7 +30,7 @@ public class Orders {
 	private String product;
 
 	@Column(name = "dateofpurchase")
-	private String dateOfPurchase;
+	private Date dateOfPurchase;
 
 	@NotNull
 	private Integer quantity;
@@ -51,6 +49,12 @@ public class Orders {
 
 	@Column(name = "finalprice",nullable = false)
 	private int finalPrice;
+
+	private String status;
+
+	@OneToOne
+	@JoinColumn(name = "refund_transactionid")
+	private Refund refund;
 
 	public void setTransactionId(String transactionId) {
 

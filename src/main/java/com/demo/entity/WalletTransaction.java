@@ -4,8 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
@@ -15,22 +19,27 @@ import java.util.Date;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "refunds")
-public class Refund {
+@Table(name = "wallettransactions")
+public class WalletTransaction {
 
     @Id
-    @Column(name = "transactionid", nullable = false)
+    @Column(name = "transactionid",nullable = false,updatable = false)
     private String transactionId;
 
-    private String product;
+    @Column(name = "transactiontype", nullable = false)
+    private String transactionType;
 
     private Integer amount;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date date;
-
-    @Column(name = "loginid", nullable = false)
+    @Column(name = "loginid")
     private String loginId;
+
+    @CreationTimestamp
+    @Column(name = "transactiontime")
+    private Date transactionTime;
+
+    @Column(name = "referenceid",nullable = false,updatable = false)
+    private String referenceId;
 
     public String getTransactionId() {
         return transactionId;
@@ -42,6 +51,6 @@ public class Refund {
         LocalDateTime now = LocalDateTime.now();
         transactionId = dtf.format(now);
 
-        this.transactionId = "REF"+transactionId;
+        this.transactionId = "W"+transactionId;
     }
 }
