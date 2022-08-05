@@ -4,5 +4,8 @@ public enum Status {
     CREDITED,
     DEBITED,
     DELIVERED,
-    REFUNDED
+    REFUNDED,
+    CREATED,
+    RESOLVED,
+    IN_PROGRESS;
 }

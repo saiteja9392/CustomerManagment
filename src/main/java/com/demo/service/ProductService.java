@@ -154,4 +154,19 @@ public class ProductService {
 
         return productDetails;
     }
+
+    public Response makeProductOutOfStock(String productId) {
+
+        Optional<Product> productInfo = productRepo.findById(productId);
+
+        if(!productInfo.isPresent())
+            throw new ResourceException("Product Not Found!!!");
+
+        if(productInfo.get().getQuantityInStore() == 0)
+            throw new ResourceException("Product Already Out Of Stock!!!");
+
+        productInfo.get().setQuantityInStore(0);
+
+        return Response.buildResponse("Product Stock Updated",productRepo.save(productInfo.get()));
+    }
 }

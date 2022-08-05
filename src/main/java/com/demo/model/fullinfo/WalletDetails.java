@@ -1,18 +1,17 @@
-package com.demo.model;
+package com.demo.model.fullinfo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class OrderDetails {
+public class WalletDetails {
 
-    private int totalOrders;
-    private List<Details> details;
+    private String walletId;
+    private Integer balance;
+    private String status;
 }

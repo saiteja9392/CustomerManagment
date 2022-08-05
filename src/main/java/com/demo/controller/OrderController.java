@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -110,23 +112,9 @@ public class OrderController {
 	}
 
 	@GetMapping("/GetOrderByTransactionId/{transactionId}")
-	public EntityModel<Order> getOrderByTransactionId(@PathVariable String transactionId) {
+	public ResponseEntity<Response> getOrderByTransactionId(@PathVariable String transactionId) {
 
-		Order order = orderService.getOrderByTransactionId(transactionId).get();
-
-		EntityModel<Order> model = null;
-		if (order.getStatus().equals(DELIVERED.name())) {
-
-			model = EntityModel.of(order);
-			WebMvcLinkBuilder linkTo = linkTo(methodOn(RefundController.class).initiateRefund(order.getTransactionId()));
-			model.add(linkTo.withRel("initiate-refund"));
-		} else {
-
-			model = EntityModel.of(order);
-		}
-
-
-		return model;
+		return new ResponseEntity<>(orderService.getOrderByTransactionId(transactionId), HttpStatus.OK);
 	}
 	
 	@GetMapping("/GetCustomProperty")

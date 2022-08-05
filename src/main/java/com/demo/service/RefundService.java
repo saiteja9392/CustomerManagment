@@ -70,7 +70,7 @@ public class RefundService {
         findTransaction.get().setRefund(savedRefund);
         orderRepo.save(findTransaction.get());
 
-        addToWalletTransaction(findTransaction, refundAmount, savedRefund);
+        this.addToWalletTransaction(findTransaction, refundAmount, savedRefund);
 
         Response response = Response.buildResponse("Refund Successful",savedRefund);
 

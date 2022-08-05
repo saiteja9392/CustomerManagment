@@ -66,7 +66,7 @@ public class OrderService {
 		Optional<CustomerLogin> customerLoginInfo = customerLoginRepo.findById(username);
 
 		if(!customerInfo.isPresent()|| !customerLoginInfo.isPresent())
-			throw new ResourceException("No Login Found");
+			throw new ResourceException("No Customer Found");
 
 		Optional<Product> findProduct = productRepo.findById(orderRequest.getProductId());
 
@@ -190,7 +190,7 @@ public class OrderService {
 
 		Order savedOrder = orderRepo.save(order);
 
-		addToWalletTransaction(username, totalPrice,savedOrder);
+		this.addToWalletTransaction(username, totalPrice,savedOrder);
 
 		Response resp = Response.buildResponse("Order Placed Successfully!!!", savedOrder);
 
@@ -210,9 +210,11 @@ public class OrderService {
 		return walletTransactionRepo.save(walletTransaction);
 	}
 
-	public Optional<Order> getOrderByTransactionId(String transactionId) {
+	public Response getOrderByTransactionId(String transactionId) {
 
-		return orderRepo.findById(transactionId);
+		Optional<Order> transactionInfo = orderRepo.findById(transactionId);
+
+		return Response.buildResponse("Transaction Details",transactionInfo.get());
 
 	}
 }

@@ -1,6 +1,6 @@
 package com.demo.controller;
 
-import com.demo.model.FullInformation;
+import com.demo.model.fullinfo.FullInformation;
 import com.demo.service.CustomerFullInformationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

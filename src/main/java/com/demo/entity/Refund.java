@@ -5,7 +5,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
@@ -26,7 +29,6 @@ public class Refund {
 
     private Integer amount;
 
-    @Temporal(TemporalType.TIMESTAMP)
     private Date date;
 
     @Column(name = "loginid", nullable = false)

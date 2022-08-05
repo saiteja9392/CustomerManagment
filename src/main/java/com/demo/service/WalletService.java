@@ -70,7 +70,7 @@ public class WalletService {
 
         Wallet updatedWallet = walletRepo.save(walletById.get());
 
-        addToWalletTransaction(walletId,addMoney);
+        this.addToWalletTransaction(walletId,addMoney);
 
         Response response = Response.buildResponse("Money Added To Wallet",updatedWallet);
 

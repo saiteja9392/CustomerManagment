@@ -93,4 +93,10 @@ public class ProductController {
 
         return models;
     }
+
+    @PutMapping("/MakeProductOutOfStock/{productId}")
+    public ResponseEntity<Response> makeProductOutOfStock(@PathVariable String productId){
+
+        return new ResponseEntity<>(productService.makeProductOutOfStock(productId),HttpStatus.ACCEPTED);
+    }
 }
