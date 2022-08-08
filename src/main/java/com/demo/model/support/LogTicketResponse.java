@@ -14,6 +14,7 @@ import java.util.Date;
 public class LogTicketResponse {
 
     private String ticketId;
+    private String category;
     private String description;
     private Date createdOn;
     private String status;

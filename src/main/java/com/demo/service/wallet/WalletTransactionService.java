@@ -1,12 +1,12 @@
-package com.demo.service;
+package com.demo.service.wallet;
 
 import com.demo.entity.Customer;
 import com.demo.entity.CustomerLogin;
-import com.demo.entity.WalletTransaction;
+import com.demo.entity.wallet.WalletTransaction;
 import com.demo.exception.custom.ResourceException;
 import com.demo.repository.CustomerLoginRepo;
 import com.demo.repository.CustomerRepo;
-import com.demo.repository.WalletTransactionRepo;
+import com.demo.repository.wallet.WalletTransactionRepo;
 import com.demo.response.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

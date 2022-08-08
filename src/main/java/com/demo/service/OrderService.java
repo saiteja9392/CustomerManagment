@@ -1,9 +1,13 @@
 package com.demo.service;
 
 import com.demo.entity.*;
+import com.demo.entity.wallet.Wallet;
+import com.demo.entity.wallet.WalletTransaction;
 import com.demo.exception.custom.ResourceException;
 import com.demo.model.OrderRequest;
 import com.demo.repository.*;
+import com.demo.repository.wallet.WalletRepo;
+import com.demo.repository.wallet.WalletTransactionRepo;
 import com.demo.response.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,13 +34,13 @@ public class OrderService {
 	ProductRepo productRepo;
 
 	@Autowired
-	WalletRepo walletRepo;
+    WalletRepo walletRepo;
 
 	@Autowired
 	PromoCodeRepo promoCodeRepo;
 
 	@Autowired
-	WalletTransactionRepo walletTransactionRepo;
+    WalletTransactionRepo walletTransactionRepo;
 
 	public List<Order> getCustomerOrderDetails(String username) {
 		

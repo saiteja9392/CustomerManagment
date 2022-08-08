@@ -1,6 +1,6 @@
-package com.demo.repository;
+package com.demo.repository.wallet;
 
-import com.demo.entity.WalletTransaction;
+import com.demo.entity.wallet.WalletTransaction;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

@@ -1,18 +1,19 @@
-package com.demo.service;
+package com.demo.service.support;
 
 import com.demo.entity.Customer;
 import com.demo.entity.CustomerLogin;
-import com.demo.entity.Support;
-import com.demo.entity.TicketNote;
-import com.demo.enumaration.Status;
+import com.demo.entity.support.Support;
+import com.demo.entity.support.TicketNote;
+import com.demo.enumaration.Priority;
+import com.demo.enumaration.SupportCategory;
 import com.demo.exception.custom.ResourceException;
 import com.demo.model.support.LogTicket;
 import com.demo.model.support.LogTicketResponse;
 import com.demo.model.support.TicketUpdate;
 import com.demo.repository.CustomerLoginRepo;
 import com.demo.repository.CustomerRepo;
-import com.demo.repository.SupportRepo;
-import com.demo.repository.TicketNoteRepo;
+import com.demo.repository.support.SupportRepo;
+import com.demo.repository.support.TicketNoteRepo;
 import com.demo.response.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,9 +47,21 @@ public class SupportService {
         if(!customerInfo.isPresent()|| !customerLoginInfo.isPresent())
             throw new ResourceException("No Customer Found");
 
+        if(logTicket.getCategory() != null)
+            Arrays.stream(SupportCategory.values())
+                .filter(sc -> sc.name().contentEquals(logTicket.getCategory().toUpperCase()))
+                .findFirst()
+                .orElseThrow(() -> new ResourceException("In-Valid Support Category"));
+
         Support support = new Support();
         support.setTicketId(support.getTicketId());
         support.setLoginId(logTicket.getLoginId());
+
+        if(logTicket.getCategory() == null)
+            logTicket.setCategory("GENERAL");
+
+        support.setCategory(logTicket.getCategory().toUpperCase());
+
         support.setDescription(logTicket.getDescription());
         support.setCreatedOn(new Date());
         support.setPriority(P4.name());
@@ -58,6 +71,7 @@ public class SupportService {
 
         LogTicketResponse logTicketResponse = LogTicketResponse.builder()
                 .ticketId(ticketCreated.getTicketId())
+                .category(ticketCreated.getCategory().toUpperCase())
                 .description(ticketCreated.getDescription())
                 .createdOn(ticketCreated.getCreatedOn())
                 .status(ticketCreated.getStatus())
@@ -172,10 +186,8 @@ public class SupportService {
         if(!ticketInfo.isPresent())
             throw new ResourceException("In-Valid Ticket Number!!!");
 
-        for(Status s: Status.values()){
-            if(!s.name().contentEquals(priority.toUpperCase()))
-                throw new ResourceException("In-Valid Priority");
-        }
+        Arrays.stream(Priority.values()).filter(p -> p.name().contentEquals(priority.toUpperCase()))
+                .findFirst().orElseThrow(() ->new ResourceException("In-Valid Priority"));
 
         if(ticketInfo.get().getPriority().contentEquals(priority.toUpperCase()))
             throw new ResourceException("Ticket Has Same Priority");
@@ -195,5 +207,14 @@ public class SupportService {
         supportRepo.delete(ticketInfo.get());
 
         return Response.buildResponse("Ticket Has Been Deleted",ticketInfo.get());
+    }
+
+    public Response getAllTicketsByCategory() {
+
+        List<Support> allTickets = supportRepo.findAll();
+
+        Map<String, List<Support>> groupByCategory = allTickets.stream().collect(Collectors.groupingBy(Support::getCategory, Collectors.toList()));
+
+        return Response.buildResponse("Ticket Details Grouped By Category",groupByCategory);
     }
 }

@@ -1,7 +1,7 @@
-package com.demo.controller;
+package com.demo.controller.wallet;
 
 import com.demo.response.Response;
-import com.demo.service.WalletTransactionService;
+import com.demo.service.wallet.WalletTransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

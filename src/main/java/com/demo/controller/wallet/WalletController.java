@@ -1,8 +1,8 @@
-package com.demo.controller;
+package com.demo.controller.wallet;
 
-import com.demo.entity.Wallet;
+import com.demo.entity.wallet.Wallet;
 import com.demo.response.Response;
-import com.demo.service.WalletService;
+import com.demo.service.wallet.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;

@@ -1,4 +1,4 @@
-package com.demo.entity;
+package com.demo.entity.wallet;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

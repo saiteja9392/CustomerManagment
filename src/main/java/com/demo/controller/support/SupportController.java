@@ -1,10 +1,10 @@
-package com.demo.controller;
+package com.demo.controller.support;
 
 import com.demo.model.support.LogTicket;
 import com.demo.model.support.LogTicketResponse;
 import com.demo.model.support.TicketUpdate;
 import com.demo.response.Response;
-import com.demo.service.SupportService;
+import com.demo.service.support.SupportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -90,5 +90,12 @@ public class SupportController {
     public ResponseEntity<Response> changePriorityOfTicket(@RequestParam String ticketId, @RequestParam String priority){
 
         return new ResponseEntity<>(supportService.changePriorityOfTicket(ticketId,priority), HttpStatus.OK);
+    }
+
+    @GetMapping("/GetAllTicketsByCategory")
+    public ResponseEntity<Response> getAllTicketsByCategory(){
+
+        /* TODO - Need to update logic */
+        return new ResponseEntity<>(supportService.getAllTicketsByCategory(), HttpStatus.OK);
     }
 }

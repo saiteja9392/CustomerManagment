@@ -1,4 +1,4 @@
-package com.demo.entity;
+package com.demo.entity.support;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,6 +34,8 @@ public class Support {
 
     @Lob
     private String description;
+
+    private String category;
 
     private String status;
 

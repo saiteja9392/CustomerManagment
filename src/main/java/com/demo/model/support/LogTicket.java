@@ -15,6 +15,9 @@ public class LogTicket {
 
     @NotNull
     private String loginId;
+
+    private String category;
+
     @NotNull
     private String description;
 }

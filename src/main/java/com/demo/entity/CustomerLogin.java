@@ -1,5 +1,6 @@
 package com.demo.entity;
 
+import com.demo.entity.wallet.Wallet;
 import com.sun.istack.NotNull;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
