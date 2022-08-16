@@ -13,7 +13,6 @@ import com.demo.model.support.TicketUpdate;
 import com.demo.repository.CustomerLoginRepo;
 import com.demo.repository.CustomerRepo;
 import com.demo.repository.support.SupportRepo;
-import com.demo.repository.support.TicketNoteRepo;
 import com.demo.response.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,9 +34,6 @@ public class SupportService {
 
     @Autowired
     SupportRepo supportRepo;
-
-    @Autowired
-    TicketNoteRepo ticketNoteRepo;
 
     public Response logTicket(LogTicket logTicket) {
 

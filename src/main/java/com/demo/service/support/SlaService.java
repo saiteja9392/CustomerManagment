@@ -8,8 +8,11 @@ import com.demo.repository.support.SupportRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,7 +43,7 @@ public class SlaService {
         List<String> listOfP3SLAMissed;
         List<String> listOfP4SLAMissed;
 
-        if(priority == null || priority == ""){
+        if(priority.isEmpty()){
 
             listOfP1SLAMissed = allTicketInfo.stream().filter(ticket -> ticket.getPriority().contentEquals(P1.name()))
                     .filter(p1 -> p1.getSla() > slaRepo.findByType(P1.name()).getTime())
@@ -105,5 +108,33 @@ public class SlaService {
         }
 
         return missedSLATicketIds;
+    }
+
+    public List<List<String>> getTicketsMissedSLAFromAndTo(String loginId, String from, String to) throws ParseException {
+
+        Date fromDate = new SimpleDateFormat("yyyy-MM-dd").parse(from);
+        Date toDate = new SimpleDateFormat("yyyy-MM-dd").parse(to);
+
+        List<Support> ticketsBasedOnLoginId = supportRepo.getTicketsBasedOnLoginId(loginId, fromDate, toDate);
+
+        List<String> listOfP1SLAMissed = ticketsBasedOnLoginId.stream().filter(ticket -> ticket.getPriority().contentEquals(P1.name()))
+                .filter(p1 -> p1.getSla() > slaRepo.findByType(P1.name()).getTime())
+                .map(p1 -> p1.getTicketId())
+                .collect(Collectors.toList());
+        List<String> listOfP2SLAMissed = ticketsBasedOnLoginId.stream().filter(ticket -> ticket.getPriority().contentEquals(P2.name()))
+                .filter(p2 -> p2.getSla() > slaRepo.findByType(P2.name()).getTime())
+                .map(p2 -> p2.getTicketId())
+                .collect(Collectors.toList());
+        List<String> listOfP3SLAMissed = ticketsBasedOnLoginId.stream().filter(ticket -> ticket.getPriority().contentEquals(P3.name()))
+                .filter(p3 -> p3.getSla() > slaRepo.findByType(P4.name()).getTime())
+                .map(p3 -> p3.getTicketId())
+                .collect(Collectors.toList());
+        List<String> listOfP4SLAMissed = ticketsBasedOnLoginId.stream().filter(ticket -> ticket.getPriority().contentEquals(P4.name()))
+                .filter(p4 -> p4.getSla() > slaRepo.findByType(P4.name()).getTime())
+                .map(p4 -> p4.getTicketId())
+                .collect(Collectors.toList());
+
+        return Arrays.asList(listOfP1SLAMissed,listOfP2SLAMissed,listOfP3SLAMissed,listOfP4SLAMissed);
+
     }
 }
