@@ -1,6 +1,7 @@
 package com.demo.entity;
 
 import lombok.*;
+import org.hibernate.validator.constraints.Range;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -35,6 +36,7 @@ public class Customer {
 	private String lastname;
 
 	@NotNull
+	@Range(min = 1,max = 100,message = "Age Cannot Be Zero or Negative")
 	private int age;
 
 	@NotNull

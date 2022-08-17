@@ -43,7 +43,7 @@ public class CustomerLoginController {
     }
 
     @DeleteMapping("/DeleteCustomerLogin")
-    public ResponseEntity<Response> deleteCustomer(@RequestParam String adminUser, @RequestParam String deleteCustomer) {
+    public ResponseEntity<Response> deleteCustomerLogin(@RequestParam String adminUser, @RequestParam String deleteCustomer) {
 
         return new ResponseEntity<>(customerLoginService.deleteCustomerLogin(adminUser, deleteCustomer),HttpStatus.OK);
     }

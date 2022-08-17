@@ -7,16 +7,20 @@ import com.demo.exception.custom.ResourceException;
 import com.demo.repository.CustomerLoginRepo;
 import com.demo.repository.CustomerRepo;
 import com.demo.response.Response;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @Scope(value = BeanDefinition.SCOPE_PROTOTYPE)
+@Slf4j
 public class CustomerService {
 	
 	@Autowired
@@ -24,6 +28,9 @@ public class CustomerService {
 
 	@Autowired
 	CustomerLoginRepo loginRepo;
+
+	@Autowired
+	CustomerLoginService customerLoginService;
 	
 	public List<Customer> listAllCustomers(){
 
@@ -41,19 +48,31 @@ public class CustomerService {
 		return customer.get();
 	}
 	
-	public Response addCustomer(Customer customer) {
+	public Response addCustomer(Customer customer) throws DataIntegrityViolationException {
 
-		Optional<Customer> findCustomer = repo.findById(customer.getId());
+		Response response = null;
 
-		Customer savedCustomer;
+		try {
 
-		if (!findCustomer.isPresent()) {
-			savedCustomer = repo.save(customer);
-		} else {
-			throw new ResourceException("Customer id already in Use");
+			Optional<Customer> findCustomer = repo.findById(customer.getId());
+
+			Customer savedCustomer;
+
+			if (!findCustomer.isPresent()) {
+				savedCustomer = repo.save(customer);
+			} else {
+				throw new ResourceException("Customer id already in Use");
+			}
+
+			response = Response.buildResponse("Customer Added", savedCustomer);
+
+		} catch (DataIntegrityViolationException e) {
+
+			log.info(String.format("Duplicate entry '%s' for key 2",customer.getEmailId()));
+			if(e.getRootCause().toString().contains(String.format("Duplicate entry '%s' for key 2",customer.getEmailId()))){
+				throw new ResourceException("Email Id Already Mapped To Different Login");
+			}
 		}
-
-		Response response = Response.buildResponse("Customer Added",savedCustomer);
 
 		return response;
 	}
@@ -76,7 +95,8 @@ public class CustomerService {
 
 		return response;
 	}
-	
+
+	@Transactional
 	public Response deleteCustomer(String adminUser,String deleteCustomer) {
 		
 		Optional<Customer> customer = repo.findById(deleteCustomer);
@@ -97,6 +117,8 @@ public class CustomerService {
 
 				if (customerLogin.isPresent()) {
 					loginRepo.delete(customerLogin.get());
+					int numberOfDeletedWalletTransactions = customerLoginService.deleteCustomerWalletTransactions(deleteCustomer);
+					log.info(String.valueOf(numberOfDeletedWalletTransactions));
 				}
 
 				response = Response.buildResponse("Customer details deleted Successfully",customer);

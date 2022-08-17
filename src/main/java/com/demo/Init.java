@@ -51,7 +51,7 @@ public class Init {
                 .id("admin")
                 .firstname("admin")
                 .lastname("admin")
-                .age(0)
+                .age(100)
                 .gender("O")
                 .emailId("admin@gmail.com")
                 .createdDate(new Date())

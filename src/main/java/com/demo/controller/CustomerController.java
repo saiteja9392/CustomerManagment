@@ -6,6 +6,7 @@ import com.demo.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
@@ -54,7 +55,7 @@ public class CustomerController {
 	
 	@PostMapping("/AddCustomer")
 	@PreAuthorize(value = "hasRole('CUSTOMER')")
-	public ResponseEntity<Response> addCustomer(@Valid @RequestBody Customer customer) {
+	public ResponseEntity<Response> addCustomer(@Valid @RequestBody Customer customer) throws DataIntegrityViolationException {
 		
 		return new ResponseEntity<>(customerService.addCustomer(customer),HttpStatus.CREATED);
 	}

@@ -6,16 +6,20 @@ import com.demo.exception.custom.InValidRequestException;
 import com.demo.exception.custom.ResourceException;
 import com.demo.repository.CustomerLoginRepo;
 import com.demo.repository.CustomerRepo;
+import com.demo.repository.wallet.WalletTransactionRepo;
 import com.demo.response.Response;
 import com.demo.util.AES;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class CustomerLoginService {
 
     @Autowired
@@ -23,6 +27,9 @@ public class CustomerLoginService {
 
     @Autowired
     CustomerLoginRepo loginRepo;
+
+    @Autowired
+    WalletTransactionRepo walletTransactionRepo;
 
     public List<CustomerLogin> listAllCustomerLogins(){
 
@@ -187,6 +194,7 @@ public class CustomerLoginService {
         return response;
     }
 
+    @Transactional
     public Response deleteCustomerLogin(String adminUser, String deleteCustomer) {
 
         Optional<CustomerLogin> customerLogin = loginRepo.findById(deleteCustomer);
@@ -202,9 +210,12 @@ public class CustomerLoginService {
             Optional<CustomerLogin> admin = loginRepo.findById(adminUser);
 
             if(admin.isPresent() && admin.get().isAdmin()) {
-                loginRepo.delete(customerLogin.get());
 
-                response = Response.buildResponse("Customer Login Record Deleted",customerLogin);
+                loginRepo.delete(customerLogin.get());
+                int numberOfDeletedWalletTransactions = this.deleteCustomerWalletTransactions(deleteCustomer);
+                log.info(String.valueOf(numberOfDeletedWalletTransactions));
+
+                response = Response.buildResponse("Customer Login Details Deleted",customerLogin);
             }
             else if(!admin.isPresent()) {
                 throw new InValidRequestException("Admin Details Not Found");
@@ -214,5 +225,13 @@ public class CustomerLoginService {
         }
 
         return response;
+    }
+
+    @Transactional
+    public int deleteCustomerWalletTransactions(String deleteCustomer) {
+
+        int numberOfRecords = walletTransactionRepo.deleteCustomerWalletTransactions(deleteCustomer);
+
+        return numberOfRecords;
     }
 }

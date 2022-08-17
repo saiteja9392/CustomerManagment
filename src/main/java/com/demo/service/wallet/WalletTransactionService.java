@@ -32,6 +32,16 @@ public class WalletTransactionService {
     @Autowired
     WalletTransactionRepo walletTransactionRepo;
 
+    public Response getWalletTransaction(String transactionId) {
+
+        Optional<WalletTransaction> transaction = walletTransactionRepo.findById(transactionId);
+
+        if(!transaction.isPresent())
+            throw new ResourceException("No Transaction Found");
+
+        return Response.buildResponse("Wallet Transaction Details",transaction.get());
+    }
+
     public Response getCustomerWalletTransactions(String loginId) {
 
         Optional<Customer> customerInfo = customerRepo.findById(loginId);
@@ -75,5 +85,40 @@ public class WalletTransactionService {
         }
 
         return response;
+    }
+
+    public List<String> getRefundTransactions(String loginId) {
+
+        Optional<Customer> customerInfo = customerRepo.findById(loginId);
+        Optional<CustomerLogin> customerLoginInfo = customerLoginRepo.findById(loginId);
+
+        if(!customerInfo.isPresent() && !customerLoginInfo.isPresent())
+            throw new ResourceException("Customer Details Not Found!!!");
+
+        List<WalletTransaction> refundTransactions = walletTransactionRepo.findRefundTransactions(loginId);
+
+        Collections.sort(refundTransactions,Comparator.comparing(WalletTransaction::getTransactionTime).reversed());
+
+        List<String> refundTransactionIds = refundTransactions.stream().map(t -> t.getTransactionId()).collect(Collectors.toList());
+
+        return refundTransactionIds;
+
+    }
+
+    public List<String> getRechargeTransactions(String loginId) {
+
+        Optional<Customer> customerInfo = customerRepo.findById(loginId);
+        Optional<CustomerLogin> customerLoginInfo = customerLoginRepo.findById(loginId);
+
+        if(!customerInfo.isPresent() && !customerLoginInfo.isPresent())
+            throw new ResourceException("Customer Details Not Found!!!");
+
+        List<WalletTransaction> rechargeTransactions = walletTransactionRepo.findRechargeTransactions(loginId);
+
+        Collections.sort(rechargeTransactions,Comparator.comparing(WalletTransaction::getTransactionTime).reversed());
+
+        List<String> rechargeTransactionIds = rechargeTransactions.stream().map(t -> t.getTransactionId()).collect(Collectors.toList());
+
+        return rechargeTransactionIds;
     }
 }
