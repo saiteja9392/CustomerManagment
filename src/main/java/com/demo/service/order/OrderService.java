@@ -1,6 +1,10 @@
 package com.demo.service.order;
 
-import com.demo.entity.*;
+import com.demo.entity.Customer;
+import com.demo.entity.CustomerLogin;
+import com.demo.entity.Product;
+import com.demo.entity.PromoCode;
+import com.demo.entity.order.Cart;
 import com.demo.entity.order.Order;
 import com.demo.entity.order.OrderSummary;
 import com.demo.entity.wallet.Wallet;

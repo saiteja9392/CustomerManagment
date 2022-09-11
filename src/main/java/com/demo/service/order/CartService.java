@@ -1,15 +1,17 @@
 package com.demo.service.order;
 
-import com.demo.entity.Cart;
 import com.demo.entity.Customer;
 import com.demo.entity.CustomerLogin;
 import com.demo.entity.Product;
+import com.demo.entity.order.Cart;
+import com.demo.entity.order.Wishlist;
 import com.demo.exception.custom.ResourceException;
 import com.demo.model.order.CartDetails;
 import com.demo.repository.CustomerLoginRepo;
 import com.demo.repository.CustomerRepo;
 import com.demo.repository.ProductRepo;
 import com.demo.repository.order.CartRepo;
+import com.demo.repository.order.WishlistRepo;
 import com.demo.response.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,6 +34,9 @@ public class CartService {
 
     @Autowired
     ProductRepo productRepo;
+
+    @Autowired
+    WishlistRepo wishlistRepo;
 
     public Response viewCart(String loginId) {
 
@@ -93,5 +98,32 @@ public class CartService {
         }
 
         return Response.buildResponse("Added To Cart",updatedCart);
+    }
+
+    @Transactional
+    public Response moveToWishList(String loginId, String cartTransactionId) {
+
+        Optional<Customer> customerInfo = customerRepo.findById(loginId);
+        Optional<CustomerLogin> customerLoginInfo = customerLoginRepo.findById(loginId);
+
+        if(!customerInfo.isPresent()|| !customerLoginInfo.isPresent())
+            throw new ResourceException("No Customer Found");
+
+        Optional<Cart> cartById = cartRepo.findById(cartTransactionId);
+
+        if(!cartById.isPresent())
+            throw new ResourceException("Product Not Present In Cart");
+
+        Wishlist wishlist = new Wishlist();
+
+        wishlist.setLoginId(loginId);
+        wishlist.setProductId(cartById.get().getProductId());
+        wishlist.setProductName(cartById.get().getProductName());
+        wishlist.setQuantity(cartById.get().getQuantity());
+        wishlist.setTransactionId(wishlist.getTransactionId());
+
+        cartRepo.delete(cartById.get());
+
+        return Response.buildResponse("Moved To Wishlist", wishlistRepo.save(wishlist));
     }
 }
