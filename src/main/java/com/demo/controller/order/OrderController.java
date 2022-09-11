@@ -1,12 +1,14 @@
-package com.demo.controller;
+package com.demo.controller.order;
 
+import com.demo.controller.RefundController;
 import com.demo.controller.wallet.WalletController;
-import com.demo.entity.Order;
-import com.demo.model.OrderRequest;
+import com.demo.entity.order.OrderSummary;
+import com.demo.model.order.OrderRequest;
+import com.demo.model.order.PlacedOrder;
 import com.demo.property.CustomerProperty;
 import com.demo.response.Response;
 import com.demo.service.CustomerService;
-import com.demo.service.OrderService;
+import com.demo.service.order.OrderService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,32 +37,32 @@ public class OrderController {
 
 	@Autowired
 	OrderService orderService;
-	
+
 	@Autowired
 	CustomerService customerService;
 
 	@Autowired
 	CustomerProperty property;
-	
+
 	@Value("${spring.application.name}")
 	String applicationName;
-	
+
 	@GetMapping("/GetOrders/{id}")
 	public List<CollectionModel> getCustomerOrderDetails(@PathVariable("id") String username) {
-		
+
 		log.debug(customerService);
 
-		List<Order> orderDetails = orderService.getCustomerOrderDetails(username);
+		List<OrderSummary> orderDetails = orderService.getCustomerOrderDetails(username);
 
 		List<CollectionModel> models = new ArrayList<>();
 
-		List<Order> deliveredOrders = orderDetails.stream().filter( order -> order.getStatus().contentEquals(DELIVERED.name())).collect(Collectors.toList());
-		List<Order> refundedOrders = orderDetails.stream().filter( order -> order.getStatus().contentEquals(REFUNDED.name())).collect(Collectors.toList());
+		List<OrderSummary> deliveredOrders = orderDetails.stream().filter( order -> order.getStatus().contentEquals(DELIVERED.name())).collect(Collectors.toList());
+		List<OrderSummary> refundedOrders = orderDetails.stream().filter( order -> order.getStatus().contentEquals(REFUNDED.name())).collect(Collectors.toList());
 
 		deliveredOrders.forEach(order -> {
 
-			CollectionModel<Order> model = CollectionModel.of(Collections.singleton(order));
-			WebMvcLinkBuilder linkTo = linkTo(methodOn(RefundController.class).initiateRefund(order.getTransactionId()));
+			CollectionModel<OrderSummary> model = CollectionModel.of(Collections.singleton(order));
+			WebMvcLinkBuilder linkTo = WebMvcLinkBuilder.linkTo(methodOn(RefundController.class).initiateRefund(order.getOrderSummaryTransactionId()));
 			model.add(linkTo.withRel("initiate-refund"));
 
 			models.add(model);
@@ -68,7 +70,7 @@ public class OrderController {
 
 		refundedOrders.forEach(order -> {
 
-			CollectionModel<Order> model = CollectionModel.of(Collections.singleton(order));
+			CollectionModel<OrderSummary> model = CollectionModel.of(Collections.singleton(order));
 
 			models.add(model);
 		});
@@ -87,9 +89,9 @@ public class OrderController {
 
 			model = EntityModel.of(orderStatus);
 
-			Order orderDetails = (Order) orderStatus.getEntity();
+			PlacedOrder orderDetails = (PlacedOrder) orderStatus.getEntity();
 
-			WebMvcLinkBuilder linkToInitiateRefund = linkTo(methodOn(RefundController.class).initiateRefund(orderDetails.getTransactionId()));
+			WebMvcLinkBuilder linkToInitiateRefund = linkTo(methodOn(RefundController.class).initiateRefund(orderDetails.getOrderList().get(0).getOrderSummaryTransactionId()));
 			model.add(linkToInitiateRefund.withRel("initiate-refund"));
 
 			WebMvcLinkBuilder linkTo = linkTo(methodOn(this.getClass()).getCustomerOrderDetails(username));
@@ -117,10 +119,16 @@ public class OrderController {
 
 		return new ResponseEntity<>(orderService.getOrderByTransactionId(transactionId), HttpStatus.OK);
 	}
-	
+
+	@PostMapping("/PlaceOrder/V2")
+	public ResponseEntity<Response> placeOrderUpdated(@RequestParam String loginId, @RequestParam(required = false) String promoCode) throws InterruptedException {
+
+		return new ResponseEntity<>(orderService.placeOrderV2(loginId, promoCode),HttpStatus.CREATED);
+	}
+
 	@GetMapping("/GetCustomProperty")
 	public void getCustomProperty() {
-		
+
 		log.info(applicationName);
 		log.info(property.getUsername());
 		log.debug(property.getPassword());

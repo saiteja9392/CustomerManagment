@@ -1,6 +1,6 @@
-package com.demo.repository;
+package com.demo.repository.order;
 
-import com.demo.entity.Order;
+import com.demo.entity.order.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

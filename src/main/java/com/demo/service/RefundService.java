@@ -2,15 +2,16 @@ package com.demo.service;
 
 import com.demo.entity.Customer;
 import com.demo.entity.CustomerLogin;
-import com.demo.entity.Order;
 import com.demo.entity.Refund;
+import com.demo.entity.order.OrderSummary;
 import com.demo.entity.wallet.Wallet;
 import com.demo.entity.wallet.WalletTransaction;
 import com.demo.exception.custom.ResourceException;
 import com.demo.repository.CustomerLoginRepo;
 import com.demo.repository.CustomerRepo;
-import com.demo.repository.OrderRepo;
 import com.demo.repository.RefundRepo;
+import com.demo.repository.order.OrderRepo;
+import com.demo.repository.order.OrderSummaryRepo;
 import com.demo.repository.wallet.WalletRepo;
 import com.demo.repository.wallet.WalletTransactionRepo;
 import com.demo.response.Response;
@@ -44,10 +45,13 @@ public class RefundService {
     @Autowired
     WalletTransactionRepo walletTransactionRepo;
 
+    @Autowired
+    OrderSummaryRepo orderSummaryRepo;
+
     @Transactional
     public Response initiateRefund(String transactionId) {
 
-        Optional<Order> findTransaction = orderRepo.findById(transactionId);
+        Optional<OrderSummary> findTransaction = orderSummaryRepo.findByOrderSummaryTransactionId(transactionId);
 
         if(!findTransaction.isPresent())
             throw new ResourceException("No Transaction Found!!!");
@@ -78,7 +82,7 @@ public class RefundService {
 
         findTransaction.get().setStatus(REFUNDED.name());
         findTransaction.get().setRefund(savedRefund);
-        orderRepo.save(findTransaction.get());
+        orderSummaryRepo.save(findTransaction.get());
 
         this.addToWalletTransaction(findTransaction, refundAmount, savedRefund);
 
@@ -88,7 +92,7 @@ public class RefundService {
     }
 
     @Transactional
-    private WalletTransaction addToWalletTransaction(Optional<Order> findTransaction, int refundAmount, Refund refund) {
+    private WalletTransaction addToWalletTransaction(Optional<OrderSummary> findTransaction, int refundAmount, Refund refund) {
 
         WalletTransaction walletTransaction = new WalletTransaction();
         walletTransaction.setTransactionId(walletTransaction.getTransactionId());

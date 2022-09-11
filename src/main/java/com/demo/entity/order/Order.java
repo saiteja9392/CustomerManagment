@@ -1,4 +1,4 @@
-package com.demo.entity;
+package com.demo.entity.order;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
@@ -7,10 +7,11 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -21,40 +22,24 @@ import java.util.Date;
 public class Order {
 
 	@Id
-	@Column(name = "transactionid")
 	private String transactionId;
 	
 	@JsonIgnore
 	private String username;
-	
-	private String product;
 
 	@Column(name = "dateofpurchase")
 	private Date dateOfPurchase;
 
-	@NotNull
-	private Integer quantity;
+	private Integer beforePromoAmount;
 
-	@Column(name = "productprice",nullable = false)
-	private Integer productPrice;
+	@Column(name = "promocode")
+	private String promoCode;
 
-	@Column(name = "offeramount")
-	private Integer offerAmount;
+	@Column(name = "finalamount")
+	private Integer finalAmount;
 
-	@Column(name = "promoamount")
-	private Integer promoAmount;
-
-	@Column(name = "offersapplied")
-	private String offersApplied;
-
-	@Column(name = "finalprice",nullable = false)
-	private int finalPrice;
-
-	private String status;
-
-	@OneToOne
-	@JoinColumn(name = "refund_transactionid")
-	private Refund refund;
+	@OneToMany(mappedBy = "order",cascade = CascadeType.ALL)
+	private List<OrderSummary> orderSummaries = new ArrayList<>();
 
 	public void setTransactionId(String transactionId) {
 

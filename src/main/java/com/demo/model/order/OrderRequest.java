@@ -1,4 +1,4 @@
-package com.demo.model;
+package com.demo.model.order;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

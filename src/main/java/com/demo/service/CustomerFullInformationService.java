@@ -2,7 +2,7 @@ package com.demo.service;
 
 import com.demo.entity.Customer;
 import com.demo.entity.CustomerLogin;
-import com.demo.entity.Order;
+import com.demo.entity.order.OrderSummary;
 import com.demo.entity.wallet.Wallet;
 import com.demo.exception.custom.ResourceException;
 import com.demo.model.Details;
@@ -12,8 +12,9 @@ import com.demo.model.fullinfo.OrderDetails;
 import com.demo.model.fullinfo.WalletDetails;
 import com.demo.repository.CustomerLoginRepo;
 import com.demo.repository.CustomerRepo;
-import com.demo.repository.OrderRepo;
 import com.demo.repository.RefundRepo;
+import com.demo.repository.order.OrderRepo;
+import com.demo.repository.order.OrderSummaryRepo;
 import com.demo.repository.wallet.WalletRepo;
 import com.demo.util.AES;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,12 +43,15 @@ public class CustomerFullInformationService {
     @Autowired
     RefundRepo refundRepo;
 
+    @Autowired
+    OrderSummaryRepo orderSummaryRepo;
+
     public FullInformation getCustomerFullInformation(String customerId) {
 
         Optional<Customer> customerInfo = customerRepo.findById(customerId);
         Optional<CustomerLogin> customerLoginInfo = customerLoginRepo.findById(customerId);
         Optional<Wallet> walletInfo = walletRepo.findById(customerId);
-        List<Order> orderInfo = orderRepo.findByUsername(customerId);
+        List<OrderSummary> orderInfo = orderSummaryRepo.findByUsername(customerId);
 
         FullInformation fullInformation = new FullInformation();
 
