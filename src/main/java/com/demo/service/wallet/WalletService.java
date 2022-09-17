@@ -46,9 +46,7 @@ public class WalletService {
 
         customerLoginByWallet.get().setWallet(wallet);
 
-        Response response = Response.buildResponse("Wallet Added",customerLoginRepo.save(customerLoginByWallet.get()));
-
-        return response;
+        return Response.buildResponse("Wallet Added",customerLoginRepo.save(customerLoginByWallet.get()));
     }
 
     @Transactional
@@ -72,13 +70,11 @@ public class WalletService {
 
         this.addToWalletTransaction(walletId,addMoney);
 
-        Response response = Response.buildResponse("Money Added To Wallet",updatedWallet);
-
-        return response;
+        return Response.buildResponse("Money Added To Wallet",updatedWallet);
     }
 
     @Transactional
-    private WalletTransaction addToWalletTransaction(String loginId, int amount) {
+    private void addToWalletTransaction(String loginId, int amount) {
 
         WalletTransaction walletTransaction = new WalletTransaction();
         walletTransaction.setTransactionId(walletTransaction.getTransactionId());
@@ -87,7 +83,7 @@ public class WalletService {
         walletTransaction.setLoginId(loginId);
         walletTransaction.setReferenceId(Utils.getBalanceTransactionId());
 
-        return walletTransactionRepo.save(walletTransaction);
+        walletTransactionRepo.save(walletTransaction);
     }
 
     public Response deleteWallet(String walletId) {

@@ -1,7 +1,5 @@
 package com.demo.service.support;
 
-import com.demo.entity.Customer;
-import com.demo.entity.CustomerLogin;
 import com.demo.entity.support.Support;
 import com.demo.entity.support.TicketNote;
 import com.demo.enumaration.Priority;
@@ -10,10 +8,9 @@ import com.demo.exception.custom.ResourceException;
 import com.demo.model.support.LogTicket;
 import com.demo.model.support.LogTicketResponse;
 import com.demo.model.support.TicketUpdate;
-import com.demo.repository.CustomerLoginRepo;
-import com.demo.repository.CustomerRepo;
 import com.demo.repository.support.SupportRepo;
 import com.demo.response.Response;
+import com.demo.validation.CustomerValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,21 +24,14 @@ import static com.demo.enumaration.Status.*;
 public class SupportService {
 
     @Autowired
-    CustomerRepo customerRepo;
-
-    @Autowired
-    CustomerLoginRepo customerLoginRepo;
+    CustomerValidation customerValidation;
 
     @Autowired
     SupportRepo supportRepo;
 
     public Response logTicket(LogTicket logTicket) {
 
-        Optional<Customer> customerInfo = customerRepo.findById(logTicket.getLoginId());
-        Optional<CustomerLogin> customerLoginInfo = customerLoginRepo.findById(logTicket.getLoginId());
-
-        if(!customerInfo.isPresent()|| !customerLoginInfo.isPresent())
-            throw new ResourceException("No Customer Found");
+        customerValidation.validateCustomer(logTicket.getLoginId());
 
         if(logTicket.getCategory() != null)
             Arrays.stream(SupportCategory.values())
@@ -140,7 +130,7 @@ public class SupportService {
         if(!ticketInfo.isPresent())
             throw new ResourceException("In-Valid Ticket Number");
 
-        Collections.sort(ticketInfo.get().getTicketNotes(),(t1, t2) -> t2.getNotesUpdatedDate().compareTo(t1.getNotesUpdatedDate()));
+        ticketInfo.get().getTicketNotes().sort((t1, t2) -> t2.getNotesUpdatedDate().compareTo(t1.getNotesUpdatedDate()));
 
         return Response.buildResponse("Request Details!!!",ticketInfo.get());
     }
@@ -149,9 +139,9 @@ public class SupportService {
 
         List<Support> allTickets = supportRepo.findAll();
 
-        Response response = null;
+        Response response;
 
-        if(true){
+        if(status){
 
             List<Support> openTickets = allTickets.stream().filter(ticket -> ticket.getStatus().contentEquals(CREATED.name())
                                                                     || ticket.getStatus().contentEquals(IN_PROGRESS.name())).collect(Collectors.toList());
@@ -170,7 +160,7 @@ public class SupportService {
 
         List<Support> allTickets = supportRepo.findByLoginId(loginId);
 
-        Collections.sort(allTickets, Comparator.comparing(Support::getCreatedOn).reversed());
+        allTickets.sort(Comparator.comparing(Support::getCreatedOn).reversed());
 
         return Response.buildResponse("Tickets Details",allTickets);
     }

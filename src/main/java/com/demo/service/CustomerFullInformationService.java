@@ -12,8 +12,6 @@ import com.demo.model.fullinfo.OrderDetails;
 import com.demo.model.fullinfo.WalletDetails;
 import com.demo.repository.CustomerLoginRepo;
 import com.demo.repository.CustomerRepo;
-import com.demo.repository.RefundRepo;
-import com.demo.repository.order.OrderRepo;
 import com.demo.repository.order.OrderSummaryRepo;
 import com.demo.repository.wallet.WalletRepo;
 import com.demo.util.AES;
@@ -36,12 +34,6 @@ public class CustomerFullInformationService {
 
     @Autowired
     WalletRepo walletRepo;
-
-    @Autowired
-    OrderRepo orderRepo;
-
-    @Autowired
-    RefundRepo refundRepo;
 
     @Autowired
     OrderSummaryRepo orderSummaryRepo;

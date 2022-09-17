@@ -1,18 +1,15 @@
 package com.demo.service.order;
 
-import com.demo.entity.Customer;
-import com.demo.entity.CustomerLogin;
 import com.demo.entity.Product;
 import com.demo.entity.order.Cart;
 import com.demo.entity.order.Wishlist;
 import com.demo.exception.custom.ResourceException;
 import com.demo.model.order.CartDetails;
-import com.demo.repository.CustomerLoginRepo;
-import com.demo.repository.CustomerRepo;
 import com.demo.repository.ProductRepo;
 import com.demo.repository.order.CartRepo;
 import com.demo.repository.order.WishlistRepo;
 import com.demo.response.Response;
+import com.demo.validation.CustomerValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,10 +21,7 @@ import java.util.Optional;
 public class CartService {
 
     @Autowired
-    CustomerRepo customerRepo;
-
-    @Autowired
-    CustomerLoginRepo customerLoginRepo;
+    CustomerValidation customerValidation;
 
     @Autowired
     CartRepo cartRepo;
@@ -40,11 +34,7 @@ public class CartService {
 
     public Response viewCart(String loginId) {
 
-        Optional<Customer> customerInfo = customerRepo.findById(loginId);
-        Optional<CustomerLogin> customerLoginInfo = customerLoginRepo.findById(loginId);
-
-        if(!customerInfo.isPresent()|| !customerLoginInfo.isPresent())
-            throw new ResourceException("No Customer Found");
+        customerValidation.validateCustomer(loginId);
 
         List<Cart> byLoginId = cartRepo.findByLoginId(loginId);
 
@@ -54,11 +44,7 @@ public class CartService {
     @Transactional
     public Response addToCart(String loginId, CartDetails cartDetails) {
 
-        Optional<Customer> customerInfo = customerRepo.findById(loginId);
-        Optional<CustomerLogin> customerLoginInfo = customerLoginRepo.findById(loginId);
-
-        if(!customerInfo.isPresent()|| !customerLoginInfo.isPresent())
-            throw new ResourceException("No Customer Found");
+        customerValidation.validateCustomer(loginId);
 
         Optional<Product> findProduct = productRepo.findById(cartDetails.getProductId());
 
@@ -103,11 +89,7 @@ public class CartService {
     @Transactional
     public Response moveToWishList(String loginId, String cartTransactionId) {
 
-        Optional<Customer> customerInfo = customerRepo.findById(loginId);
-        Optional<CustomerLogin> customerLoginInfo = customerLoginRepo.findById(loginId);
-
-        if(!customerInfo.isPresent()|| !customerLoginInfo.isPresent())
-            throw new ResourceException("No Customer Found");
+        customerValidation.validateCustomer(loginId);
 
         Optional<Cart> cartById = cartRepo.findById(cartTransactionId);
 

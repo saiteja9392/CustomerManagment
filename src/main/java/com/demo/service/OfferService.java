@@ -23,8 +23,6 @@ public class OfferService {
     @Autowired
     ProductRepo productRepo;
 
-    private String Status = null;
-
     public Offer addOffer(Offer offer) {
 
         Optional<Offer> findOffer = offerRepo.findById(offer.getOfferId());
@@ -34,7 +32,8 @@ public class OfferService {
         if(!findOffer.isPresent()) {
             offerSaved = offerRepo.save(offer);
 
-        } else if(findOffer.get().getPercentage() == offer.getPercentage())
+        }
+        else if(findOffer.get().getPercentage() == offer.getPercentage())
             throw new ResourceException(String.format("Offer Percentage Already Exists, You Can Use %s !!!",
                     findOffer.get().getOfferId()));
         else if(findOffer.isPresent())
@@ -100,8 +99,6 @@ public class OfferService {
 
         offerRepo.delete(offerById.get());
 
-        Response response = Response.buildResponse("Offer Deleted",offerById.get());
-
-        return response;
+        return Response.buildResponse("Offer Deleted",offerById.get());
     }
 }

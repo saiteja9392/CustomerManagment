@@ -8,7 +8,10 @@ import com.demo.response.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -16,8 +19,6 @@ public class ProductService {
 
     @Autowired
     ProductRepo productRepo;
-
-    private String Status = "";
 
     public Response addProduct(Product newProduct) {
 
@@ -111,7 +112,7 @@ public class ProductService {
             productDetails.add(productDetail);
         });
 
-        Collections.sort(productDetails, Comparator.comparing(ProductDetails::getProductId));
+        productDetails.sort(Comparator.comparing(ProductDetails::getProductId));
 
         return productDetails;
     }
@@ -127,9 +128,9 @@ public class ProductService {
 
         productRepo.deleteById(productId);
 
-        Status = String.format("Product '%s' Has Been Deleted Successfully",product.get().getProductName());
+        String status = String.format("Product '%s' Has Been Deleted Successfully", product.get().getProductName());
 
-        return Response.buildResponse(Status,product.get());
+        return Response.buildResponse(status,product.get());
     }
 
     public List<ProductDetails> filterBasedOnQuantity(Integer quantity) {
@@ -150,7 +151,7 @@ public class ProductService {
             productDetails.add(product);
         });
 
-        Collections.sort(productDetails, Comparator.comparing(ProductDetails::getQuantityInStore));
+        productDetails.sort(Comparator.comparing(ProductDetails::getQuantityInStore));
 
         return productDetails;
     }

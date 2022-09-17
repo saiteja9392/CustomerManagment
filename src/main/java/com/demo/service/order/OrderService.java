@@ -1,7 +1,5 @@
 package com.demo.service.order;
 
-import com.demo.entity.Customer;
-import com.demo.entity.CustomerLogin;
 import com.demo.entity.Product;
 import com.demo.entity.PromoCode;
 import com.demo.entity.order.Cart;
@@ -12,8 +10,6 @@ import com.demo.entity.wallet.WalletTransaction;
 import com.demo.exception.custom.ResourceException;
 import com.demo.model.order.OrderRequest;
 import com.demo.model.order.PlacedOrder;
-import com.demo.repository.CustomerLoginRepo;
-import com.demo.repository.CustomerRepo;
 import com.demo.repository.ProductRepo;
 import com.demo.repository.PromoCodeRepo;
 import com.demo.repository.order.CartRepo;
@@ -22,6 +18,7 @@ import com.demo.repository.order.OrderSummaryRepo;
 import com.demo.repository.wallet.WalletRepo;
 import com.demo.repository.wallet.WalletTransactionRepo;
 import com.demo.response.Response;
+import com.demo.validation.CustomerValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,13 +30,6 @@ import static com.demo.enumaration.Status.DELIVERED;
 
 @Service
 public class OrderService {
-
-	@Autowired
-	CustomerRepo customerRepo;
-
-	@Autowired
-	CustomerLoginRepo customerLoginRepo;
-
 	@Autowired
 	OrderRepo orderRepo;
 
@@ -61,18 +51,16 @@ public class OrderService {
 	@Autowired
 	OrderSummaryRepo orderSummaryRepo;
 
+	@Autowired
+	CustomerValidation customerValidation;
+
 	public List<OrderSummary> getCustomerOrderDetails(String username) {
 
-		Optional<Customer> c = customerRepo.findById(username);
-
-		Optional<CustomerLogin> cLogin = customerLoginRepo.findById(username);
-
-		if(!c.isPresent()|| !cLogin.isPresent())
-			throw new ResourceException("No Login Found");
+		customerValidation.validateCustomer(username);
 
 		List<OrderSummary> orders = orderSummaryRepo.findByUsername(username);
 
-		Collections.sort(orders, Comparator.comparing(OrderSummary::getDateOfPurchase).reversed());
+		orders.sort(Comparator.comparing(OrderSummary::getDateOfPurchase).reversed());
 
 		if(orders == null)
 			throw new ResourceException("No Orders Found");
@@ -83,11 +71,7 @@ public class OrderService {
 	@Transactional
 	public Response placeOrder(String username, OrderRequest orderRequest) {
 
-		Optional<Customer> customerInfo = customerRepo.findById(username);
-		Optional<CustomerLogin> customerLoginInfo = customerLoginRepo.findById(username);
-
-		if(!customerInfo.isPresent()|| !customerLoginInfo.isPresent())
-			throw new ResourceException("No Customer Found");
+		customerValidation.validateCustomer(username);
 
 		Optional<Product> findProduct = productRepo.findById(orderRequest.getProductId());
 
@@ -115,7 +99,7 @@ public class OrderService {
 		List<Order> orderByUsername = orderRepo.findByUsername(username);
 		Optional<PromoCode> promo = Optional.empty();
 
-		Response resp = null;
+		Response resp;
 		if(orderRequest.getPromoCode() != null) {
 			promo = promoCodeRepo.findById(orderRequest.getPromoCode());
 		}
@@ -124,7 +108,7 @@ public class OrderService {
 			throw new ResourceException("Invalid Promo Code!!!");
 
 		if(promo.isPresent()) {
-			if (promo.get().getStatus().booleanValue() == false)
+			if (!promo.get().getStatus())
 				throw new ResourceException("Promo Code Is Not Active!!!");
 		}
 
@@ -233,13 +217,11 @@ public class OrderService {
 				.orderList(orderSummaries)
 				.build();
 
-		Response resp = Response.buildResponse("Order Placed Successfully!!!", placedOrder);
-
-		return resp;
+		return Response.buildResponse("Order Placed Successfully!!!", placedOrder);
 	}
 
 	@Transactional
-	private WalletTransaction addToWalletTransaction(String username, int totalPrice, Order order) {
+	private void addToWalletTransaction(String username, int totalPrice, Order order) {
 
 		WalletTransaction walletTransaction = new WalletTransaction();
 		walletTransaction.setTransactionId(walletTransaction.getTransactionId());
@@ -248,7 +230,7 @@ public class OrderService {
 		walletTransaction.setLoginId(username);
 		walletTransaction.setReferenceId(order.getTransactionId());
 
-		return walletTransactionRepo.save(walletTransaction);
+		walletTransactionRepo.save(walletTransaction);
 	}
 
 	public Response getOrderByTransactionId(String transactionId) {
@@ -265,11 +247,7 @@ public class OrderService {
 	@Transactional
 	public Response placeOrderV2(String loginId, String promoCode) throws InterruptedException {
 
-		Optional<Customer> customerInfo = customerRepo.findById(loginId);
-		Optional<CustomerLogin> customerLoginInfo = customerLoginRepo.findById(loginId);
-
-		if(!customerInfo.isPresent()|| !customerLoginInfo.isPresent())
-			throw new ResourceException("No Customer Found");
+		customerValidation.validateCustomer(loginId);
 
 		Optional<Wallet> walletById = walletRepo.findById(loginId);
 
@@ -292,7 +270,7 @@ public class OrderService {
 			throw new ResourceException("Invalid Promo Code!!!");
 
 		if(promo.isPresent()) {
-			if (promo.get().getStatus().booleanValue() == false)
+			if (!promo.get().getStatus())
 				throw new ResourceException("Promo Code Is Not Active!!!");
 		}
 
@@ -360,9 +338,7 @@ public class OrderService {
 
 		cartRepo.deleteAll(cartDetailsByLogin);
 
-		Response resp = Response.buildResponse("Order Placed Successfully!!!", savedOrder);
-
-		return resp;
+		return Response.buildResponse("Order Placed Successfully!!!", savedOrder);
 	}
 
 	@Transactional
@@ -371,8 +347,8 @@ public class OrderService {
 
 		int beforePromoPrice = 0;
 
-		for(int i = 0; i<ordersPlaced.size(); i++){
-			beforePromoPrice = beforePromoPrice + ordersPlaced.get(i).getFinalPrice();
+		for (OrderSummary orderSummary : ordersPlaced) {
+			beforePromoPrice = beforePromoPrice + orderSummary.getFinalPrice();
 		}
 
 		if(promo.isPresent())
@@ -380,7 +356,7 @@ public class OrderService {
 				throw new ResourceException("Invalid Promo Code!!!");
 
 		if(promo.isPresent()) {
-			if (promo.get().getStatus().booleanValue() == false)
+			if (!promo.get().getStatus())
 				throw new ResourceException("Promo Code Is Not Active!!!");
 		}
 

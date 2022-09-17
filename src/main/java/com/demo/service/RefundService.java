@@ -1,25 +1,24 @@
 package com.demo.service;
 
-import com.demo.entity.Customer;
-import com.demo.entity.CustomerLogin;
 import com.demo.entity.Refund;
 import com.demo.entity.order.OrderSummary;
 import com.demo.entity.wallet.Wallet;
 import com.demo.entity.wallet.WalletTransaction;
 import com.demo.exception.custom.ResourceException;
-import com.demo.repository.CustomerLoginRepo;
-import com.demo.repository.CustomerRepo;
 import com.demo.repository.RefundRepo;
-import com.demo.repository.order.OrderRepo;
 import com.demo.repository.order.OrderSummaryRepo;
 import com.demo.repository.wallet.WalletRepo;
 import com.demo.repository.wallet.WalletTransactionRepo;
 import com.demo.response.Response;
+import com.demo.validation.CustomerValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.*;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 import static com.demo.enumaration.Status.CREDITED;
 import static com.demo.enumaration.Status.REFUNDED;
@@ -28,16 +27,10 @@ import static com.demo.enumaration.Status.REFUNDED;
 public class RefundService {
 
     @Autowired
-    CustomerRepo customerRepo;
-
-    @Autowired
-    CustomerLoginRepo customerLoginRepo;
+    CustomerValidation customerValidation;
 
     @Autowired
     RefundRepo refundRepo;
-
-    @Autowired
-    OrderRepo orderRepo;
 
     @Autowired
     WalletRepo walletRepo;
@@ -86,13 +79,11 @@ public class RefundService {
 
         this.addToWalletTransaction(findTransaction, refundAmount, savedRefund);
 
-        Response response = Response.buildResponse("Refund Successful",savedRefund);
-
-        return response;
+        return Response.buildResponse("Refund Successful",savedRefund);
     }
 
     @Transactional
-    private WalletTransaction addToWalletTransaction(Optional<OrderSummary> findTransaction, int refundAmount, Refund refund) {
+    private void addToWalletTransaction(Optional<OrderSummary> findTransaction, int refundAmount, Refund refund) {
 
         WalletTransaction walletTransaction = new WalletTransaction();
         walletTransaction.setTransactionId(walletTransaction.getTransactionId());
@@ -101,20 +92,16 @@ public class RefundService {
         walletTransaction.setLoginId(findTransaction.get().getUsername());
         walletTransaction.setReferenceId(refund.getTransactionId());
 
-        return walletTransactionRepo.save(walletTransaction);
+        walletTransactionRepo.save(walletTransaction);
     }
 
     public List<Refund> getRefundDetailsOfCustomer(String customerId) {
 
-        Optional<Customer> customerInfo = customerRepo.findById(customerId);
-        Optional<CustomerLogin> customerLoginInfo = customerLoginRepo.findById(customerId);
-
-        if(!customerInfo.isPresent() && !customerLoginInfo.isPresent())
-            throw new ResourceException("Customer Details Not Found!!!");
+        customerValidation.validateCustomer(customerId);
 
         List<Refund> refundDetails = refundRepo.findByLoginId(customerId);
 
-        Collections.sort(refundDetails, Comparator.comparing(Refund::getDate).reversed());
+        refundDetails.sort(Comparator.comparing(Refund::getDate).reversed());
 
         return refundDetails;
     }

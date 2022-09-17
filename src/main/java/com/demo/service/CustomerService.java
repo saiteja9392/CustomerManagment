@@ -91,9 +91,7 @@ public class CustomerService {
 			updatedCustomer = repo.save(customer);
 		}
 
-		Response response = Response.buildResponse("Customer Details Updated",updatedCustomer);
-
-		return response;
+		return Response.buildResponse("Customer Details Updated",updatedCustomer);
 	}
 
 	@Transactional

@@ -40,7 +40,7 @@ public class Wishlist {
 
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
         LocalDateTime now = LocalDateTime.now();
-        transactionId = "W"+dtf.format(now);
+        transactionId = "WISH"+dtf.format(now);
 
         this.transactionId = transactionId;
     }

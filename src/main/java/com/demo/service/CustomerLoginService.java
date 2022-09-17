@@ -49,7 +49,7 @@ public class CustomerLoginService {
 
     public Response createCustomerLogin(CustomerLogin customerLogin){
 
-        CustomerLogin savedCustomerLogin = null;
+        CustomerLogin savedCustomerLogin;
         
         Optional<Customer> c = repo.findById(customerLogin.getLoginid());
 
@@ -90,7 +90,7 @@ public class CustomerLoginService {
 
         Optional<CustomerLogin> user = loginRepo.findById(username);
 
-        Response response = null;
+        Response response;
 
         if (user.isPresent()) {
 
@@ -119,7 +119,7 @@ public class CustomerLoginService {
         Optional<Customer> customer = repo.findById(username);
         Optional<CustomerLogin> customerLogin = loginRepo.findById(username);
 
-        Response response = null;
+        Response response;
 
         if(!customer.isPresent()) {
             throw new ResourceException("Customer Details Not Found");
@@ -155,7 +155,7 @@ public class CustomerLoginService {
 
         Optional<CustomerLogin> user = loginRepo.findById(username);
 
-        Response response = null;
+        Response response;
 
         if (user.isPresent()) {
 
@@ -189,9 +189,7 @@ public class CustomerLoginService {
 
         CustomerLogin updateCustomerLogin = loginRepo.save(c.get());
 
-        Response response = Response.buildResponse("Customer Login Updated", updateCustomerLogin);
-
-        return response;
+        return Response.buildResponse("Customer Login Updated", updateCustomerLogin);
     }
 
     @Transactional
@@ -199,7 +197,7 @@ public class CustomerLoginService {
 
         Optional<CustomerLogin> customerLogin = loginRepo.findById(deleteCustomer);
 
-        Response response = null;
+        Response response;
 
         if(!customerLogin.isPresent()) {
             throw new ResourceException("Customer Login Details Not Found");
@@ -230,8 +228,6 @@ public class CustomerLoginService {
     @Transactional
     public int deleteCustomerWalletTransactions(String deleteCustomer) {
 
-        int numberOfRecords = walletTransactionRepo.deleteCustomerWalletTransactions(deleteCustomer);
-
-        return numberOfRecords;
+        return walletTransactionRepo.deleteCustomerWalletTransactions(deleteCustomer);
     }
 }

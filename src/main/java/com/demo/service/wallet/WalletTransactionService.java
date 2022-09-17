@@ -8,10 +8,10 @@ import com.demo.repository.CustomerLoginRepo;
 import com.demo.repository.CustomerRepo;
 import com.demo.repository.wallet.WalletTransactionRepo;
 import com.demo.response.Response;
+import com.demo.validation.CustomerValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -22,6 +22,9 @@ import static com.demo.enumaration.Status.DEBITED;
 
 @Service
 public class WalletTransactionService {
+
+    @Autowired
+    CustomerValidation customerValidation;
 
     @Autowired
     CustomerRepo customerRepo;
@@ -61,25 +64,24 @@ public class WalletTransactionService {
         Optional<Customer> customerInfo = customerRepo.findById(loginId);
         Optional<CustomerLogin> customerLoginInfo = customerLoginRepo.findById(loginId);
 
-        Response response = null;
-
         if(!customerInfo.isPresent() && !customerLoginInfo.isPresent())
             throw new ResourceException("Customer Details Not Found!!!");
 
         List<WalletTransaction> walletInfo = walletTransactionRepo.findByLoginId(loginId);
 
+        Response response;
         if(type){
 
-            List<WalletTransaction> creditedInfo = walletInfo.stream().filter(walletTransaction -> walletTransaction.getTransactionType().contentEquals(CREDITED.name())).collect(Collectors.toList());
-
-            Collections.sort(creditedInfo, Comparator.comparing(WalletTransaction::getTransactionTime).reversed());
+            List<WalletTransaction> creditedInfo = walletInfo.stream()
+                    .filter(walletTransaction -> walletTransaction.getTransactionType().contentEquals(CREDITED.name()))
+                    .sorted(Comparator.comparing(WalletTransaction::getTransactionTime).reversed()).collect(Collectors.toList());
 
             response = Response.buildResponse("Credited Details", creditedInfo);
         }
         else {
-            List<WalletTransaction> debitedInfo = walletInfo.stream().filter(walletTransaction -> walletTransaction.getTransactionType().contentEquals(DEBITED.name())).collect(Collectors.toList());
-
-            Collections.sort(debitedInfo, Comparator.comparing(WalletTransaction::getTransactionTime).reversed());
+            List<WalletTransaction> debitedInfo = walletInfo.stream()
+                    .filter(walletTransaction -> walletTransaction.getTransactionType().contentEquals(DEBITED.name()))
+                    .sorted(Comparator.comparing(WalletTransaction::getTransactionTime).reversed()).collect(Collectors.toList());
 
             response = Response.buildResponse("Debited Details",debitedInfo);
         }
@@ -89,36 +91,24 @@ public class WalletTransactionService {
 
     public List<String> getRefundTransactions(String loginId) {
 
-        Optional<Customer> customerInfo = customerRepo.findById(loginId);
-        Optional<CustomerLogin> customerLoginInfo = customerLoginRepo.findById(loginId);
-
-        if(!customerInfo.isPresent() && !customerLoginInfo.isPresent())
-            throw new ResourceException("Customer Details Not Found!!!");
+        customerValidation.validateCustomer(loginId);
 
         List<WalletTransaction> refundTransactions = walletTransactionRepo.findRefundTransactions(loginId);
 
-        Collections.sort(refundTransactions,Comparator.comparing(WalletTransaction::getTransactionTime).reversed());
+        refundTransactions.sort(Comparator.comparing(WalletTransaction::getTransactionTime).reversed());
 
-        List<String> refundTransactionIds = refundTransactions.stream().map(t -> t.getTransactionId()).collect(Collectors.toList());
-
-        return refundTransactionIds;
+        return refundTransactions.stream().map(WalletTransaction::getTransactionId).collect(Collectors.toList());
 
     }
 
     public List<String> getRechargeTransactions(String loginId) {
 
-        Optional<Customer> customerInfo = customerRepo.findById(loginId);
-        Optional<CustomerLogin> customerLoginInfo = customerLoginRepo.findById(loginId);
-
-        if(!customerInfo.isPresent() && !customerLoginInfo.isPresent())
-            throw new ResourceException("Customer Details Not Found!!!");
+        customerValidation.validateCustomer(loginId);
 
         List<WalletTransaction> rechargeTransactions = walletTransactionRepo.findRechargeTransactions(loginId);
 
-        Collections.sort(rechargeTransactions,Comparator.comparing(WalletTransaction::getTransactionTime).reversed());
+        rechargeTransactions.sort(Comparator.comparing(WalletTransaction::getTransactionTime).reversed());
 
-        List<String> rechargeTransactionIds = rechargeTransactions.stream().map(t -> t.getTransactionId()).collect(Collectors.toList());
-
-        return rechargeTransactionIds;
+        return rechargeTransactions.stream().map(WalletTransaction::getTransactionId).collect(Collectors.toList());
     }
 }
