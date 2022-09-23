@@ -263,7 +263,7 @@ public class OrderService {
 		Optional<PromoCode> promo = Optional.empty();
 
 		if(promoCode != null) {
-			promo = promoCodeRepo.findById(promoCode);
+			promo = promoCodeRepo.findById(promoCode.toUpperCase());
 		}
 
 		if(promoCode != null && !promo.isPresent())
@@ -330,8 +330,6 @@ public class OrderService {
 
 			orderSummary.setOrder(order);
 			ordersPlaced.add(orderSummary);
-
-			Thread.sleep(1000);
 		}
 
 		Order savedOrder = this.paymentUpdate(ordersPlaced, loginId, promo, order);

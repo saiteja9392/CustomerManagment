@@ -49,6 +49,9 @@ public class RefundService {
         if(!findTransaction.isPresent())
             throw new ResourceException("No Transaction Found!!!");
 
+        if(findTransaction.get().getRefund() != null)
+            throw new ResourceException("Refund Already Done!!!");
+
         Optional<Wallet> findWallet = walletRepo.findById(findTransaction.get().getUsername());
 
         if(!findWallet.isPresent())

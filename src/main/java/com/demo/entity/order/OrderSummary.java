@@ -51,9 +51,9 @@ public class OrderSummary {
     @JoinColumn(name = "order_transaction_id", nullable = false)
     private Order order;
 
-    public void setOrderSummaryTransactionId(String orderSummaryTransactionId) {
+    public synchronized void setOrderSummaryTransactionId(String orderSummaryTransactionId) {
 
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
         LocalDateTime now = LocalDateTime.now();
         orderSummaryTransactionId = "ORD"+dtf.format(now);
 

@@ -29,7 +29,7 @@ public class ExceptionHandling extends ResponseEntityExceptionHandler{
 		
 		ExceptionMessageFormat exceptionMessage = new ExceptionMessageFormat(e.getMessage(), Utils.getCurrentTimeStamp(),web.getDescription(false));
 		
-		return new ResponseEntity<Object>(exceptionMessage, HttpStatus.NOT_FOUND);
+		return new ResponseEntity<Object>(exceptionMessage, HttpStatus.BAD_REQUEST);
 	}
 	
 	@ExceptionHandler(InValidRequestException.class)
