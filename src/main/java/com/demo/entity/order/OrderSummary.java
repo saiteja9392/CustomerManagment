@@ -13,9 +13,6 @@ import java.util.Date;
 public class OrderSummary {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer serialNumber;
-    
     private String orderSummaryTransactionId;
 
     @JsonIgnore
