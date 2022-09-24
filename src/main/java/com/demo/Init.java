@@ -3,10 +3,12 @@ package com.demo;
 import com.demo.entity.Customer;
 import com.demo.entity.CustomerLogin;
 import com.demo.entity.Product;
+import com.demo.entity.support.Sla;
 import com.demo.entity.wallet.Wallet;
 import com.demo.repository.CustomerLoginRepo;
 import com.demo.repository.CustomerRepo;
 import com.demo.repository.ProductRepo;
+import com.demo.repository.support.SlaRepo;
 import com.demo.repository.wallet.WalletRepo;
 import com.demo.util.AES;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -33,6 +38,9 @@ public class Init {
     @Autowired
     WalletRepo walletRepo;
 
+    @Autowired
+    SlaRepo slaRepo;
+
     private static final Customer c;
 
     private static CustomerLogin cl;
@@ -42,6 +50,8 @@ public class Init {
     private static final Product p2;
 
     private static Wallet w;
+
+    private static List<Sla> s;
 
     static {
 
@@ -91,6 +101,8 @@ public class Init {
                 .quantityInStore(0)
                 .createdBy("system")
                 .build();
+
+        s = Arrays.asList(new Sla("P1",4L),new Sla("P2",3L),new Sla("P3",2L),new Sla("P4",1L));
     }
 
     @PostConstruct
@@ -131,5 +143,12 @@ public class Init {
             productRepo.save(p1);
         if(!productTwo.isPresent())
             productRepo.save(p2);
+
+        slaRepo.saveAll(s);
+    }
+
+    @PreDestroy
+    public void deleteBeforeStart(){
+        slaRepo.deleteAll();
     }
 }

@@ -12,4 +12,7 @@ public interface SupportRepo extends JpaRepository<Support,String> {
 
     @Query(value = "select * from support where login_id = ?1 and created > ?2 and created < ?3",nativeQuery = true)
     List<Support> getTicketsBasedOnLoginId(String loginId, Date from, Date to);
+
+    @Query(value = "select * from support where sla is not null",nativeQuery = true)
+    List<Support> getNotNullSlaTickets();
 }

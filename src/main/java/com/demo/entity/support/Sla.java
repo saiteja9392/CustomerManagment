@@ -16,7 +16,6 @@ import javax.persistence.Id;
 public class Sla {
 
     @Id
-    private Integer id;
     private String type;
-    private Integer time;
+    private Long time;
 }
