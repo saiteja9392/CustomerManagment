@@ -20,6 +20,9 @@ import com.demo.repository.wallet.WalletTransactionRepo;
 import com.demo.response.Response;
 import com.demo.validation.CustomerValidation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -394,5 +397,17 @@ public class OrderService {
 		this.addToWalletTransaction(loginId, afterPromoPrice, order);
 
 		return savedOrder;
+	}
+
+    public Page<Order> getOrdersPaginationAndSorting(Integer offSet, Integer pageSize, String byField) {
+
+		Page<Order> orders;
+
+		if(byField != null)
+			orders = orderRepo.findAll(PageRequest.of(offSet, pageSize).withSort(Sort.by(byField)));
+		else
+			orders = orderRepo.findAll(PageRequest.of(offSet, pageSize));
+
+		return orders;
 	}
 }

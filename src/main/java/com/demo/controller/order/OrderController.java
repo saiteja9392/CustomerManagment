@@ -2,6 +2,7 @@ package com.demo.controller.order;
 
 import com.demo.controller.RefundController;
 import com.demo.controller.wallet.WalletController;
+import com.demo.entity.order.Order;
 import com.demo.entity.order.OrderSummary;
 import com.demo.model.order.OrderRequest;
 import com.demo.model.order.PlacedOrder;
@@ -12,6 +13,7 @@ import com.demo.service.order.OrderService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -132,5 +134,12 @@ public class OrderController {
 		log.info(applicationName);
 		log.info(property.getUsername());
 		log.debug(property.getPassword());
+	}
+
+	@GetMapping("/GetOrders/V2")
+	public ResponseEntity<Page<Order>> getOrdersPaginationAndSorting(@RequestParam Integer offSet, @RequestParam Integer pageSize,
+													 @RequestParam(required = false) String byField){
+
+		return new ResponseEntity<>(orderService.getOrdersPaginationAndSorting(offSet,pageSize,byField), HttpStatus.OK);
 	}
 }
